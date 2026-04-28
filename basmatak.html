@@ -1,0 +1,1514 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#F4EFE3">
+  <title>بصمتك — معسكر هختار صحتي</title>
+  <meta name="description" content="صوتك يوصل. شاركنا تجربتك في معسكر هختار صحتي.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ─────────────────────────────────────────────────────
+       RESET & BASE
+       ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: 'Tajawal', system-ui, sans-serif;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.7;
+      color: var(--ink);
+      background: var(--paper);
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       DESIGN TOKENS
+       ───────────────────────────────────────────────────── */
+    :root {
+      --paper: #F4EFE3;
+      --paper-soft: #FBF7EC;
+      --paper-deep: #EBE3D0;
+      --ink: #1F1A14;
+      --ink-soft: #4A3F30;
+      --ink-faint: #8B7E68;
+      --line: #D9CFB8;
+      --line-soft: #E8DDC8;
+      --teal: #0F3D3E;
+      --teal-light: #1F5556;
+      --terra: #B8451F;
+      --terra-light: #D45B30;
+      --gold: #C9994A;
+      --gold-light: #E0B66A;
+      --shadow-sm: 0 1px 2px rgba(31, 26, 20, 0.05);
+      --shadow-md: 0 4px 12px rgba(31, 26, 20, 0.08);
+      --shadow-lg: 0 12px 40px rgba(31, 26, 20, 0.12);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       PAPER ATMOSPHERE
+       ───────────────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        radial-gradient(circle at 20% 10%, rgba(184, 69, 31, 0.04), transparent 40%),
+        radial-gradient(circle at 80% 90%, rgba(15, 61, 62, 0.05), transparent 50%);
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.4;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.6  0 0 0 0 0.5  0 0 0 0 0.3  0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ─────────────────────────────────────────────────────
+       PROGRESS BAR
+       ───────────────────────────────────────────────────── */
+    .progress-track {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: rgba(15, 61, 62, 0.08);
+      z-index: 100;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--teal), var(--terra));
+      transition: width 0.2s ease-out;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       LAYOUT
+       ───────────────────────────────────────────────────── */
+    main {
+      position: relative;
+      z-index: 2;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 24px 20px 60px;
+    }
+    @media (min-width: 768px) {
+      main { padding: 40px 32px 80px; }
+    }
+
+    /* ─────────────────────────────────────────────────────
+       HERO / TOP
+       ───────────────────────────────────────────────────── */
+    .hero {
+      padding: 28px 0 36px;
+      text-align: center;
+      position: relative;
+    }
+    .hero__mark {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'El Messiri', serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .hero__mark-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--terra);
+      border-radius: 50%;
+    }
+    .hero__title {
+      font-family: 'El Messiri', serif;
+      font-weight: 700;
+      font-size: clamp(48px, 12vw, 72px);
+      line-height: 0.95;
+      color: var(--teal);
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+    .hero__subtitle {
+      font-family: 'El Messiri', serif;
+      font-weight: 400;
+      font-size: clamp(15px, 4vw, 18px);
+      color: var(--ink-soft);
+      max-width: 420px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+    .hero__divider {
+      margin: 32px auto 0;
+      width: 60px;
+      height: 1px;
+      background: var(--line);
+      position: relative;
+    }
+    .hero__divider::before,
+    .hero__divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 4px;
+      height: 4px;
+      background: var(--terra);
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+    .hero__divider::before { left: -10px; }
+    .hero__divider::after { right: -10px; }
+
+    /* ─────────────────────────────────────────────────────
+       INTRO LETTER
+       ───────────────────────────────────────────────────── */
+    .intro {
+      background: var(--paper-soft);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      margin-bottom: 44px;
+      position: relative;
+      box-shadow: var(--shadow-sm);
+    }
+    .intro::before {
+      content: '"';
+      position: absolute;
+      top: -12px;
+      right: 24px;
+      font-family: 'El Messiri', serif;
+      font-size: 80px;
+      line-height: 1;
+      color: var(--terra);
+      opacity: 0.18;
+      font-weight: 700;
+    }
+    .intro p {
+      font-size: 15.5px;
+      line-height: 1.85;
+      color: var(--ink-soft);
+      margin-bottom: 14px;
+    }
+    .intro p:last-child { margin-bottom: 0; }
+    .intro strong {
+      color: var(--teal);
+      font-weight: 600;
+    }
+    .intro__signature {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px dashed var(--line);
+      font-family: 'El Messiri', serif;
+      font-size: 13px;
+      color: var(--ink-faint);
+    }
+    .intro__signature-line {
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    /* ─────────────────────────────────────────────────────
+       SECTIONS
+       ───────────────────────────────────────────────────── */
+    .section {
+      margin-bottom: 56px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .section.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section__head {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 6px;
+    }
+    .section__num {
+      font-family: 'El Messiri', serif;
+      font-size: 48px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--terra);
+      flex-shrink: 0;
+      font-feature-settings: 'lnum';
+    }
+    .section__title {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(26px, 6.5vw, 32px);
+      font-weight: 600;
+      color: var(--teal);
+      line-height: 1.2;
+    }
+    .section__sub {
+      margin-right: 76px;
+      margin-bottom: 32px;
+      font-size: 14.5px;
+      color: var(--ink-faint);
+      line-height: 1.6;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       QUESTIONS
+       ───────────────────────────────────────────────────── */
+    .q {
+      margin-bottom: 32px;
+    }
+    .q__label {
+      display: block;
+      font-family: 'El Messiri', serif;
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .q__hint {
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13px;
+      color: var(--ink-faint);
+      font-weight: 400;
+      margin-right: 8px;
+    }
+    .q__optional {
+      display: inline-block;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      padding: 2px 8px;
+      border: 1px solid var(--gold-light);
+      border-radius: 100px;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       OPTIONS (RADIO / CHECKBOX)
+       ───────────────────────────────────────────────────── */
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .options--grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 480px) {
+      .options--grid { grid-template-columns: 1fr; }
+    }
+
+    .option {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--paper-soft);
+      border: 1.5px solid var(--line-soft);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.18s ease;
+      font-size: 15px;
+      color: var(--ink-soft);
+      user-select: none;
+    }
+    .option:hover {
+      border-color: var(--gold);
+      background: #fff;
+      transform: translateY(-1px);
+    }
+    .option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .option__mark {
+      width: 20px;
+      height: 20px;
+      border: 1.5px solid var(--ink-faint);
+      flex-shrink: 0;
+      transition: all 0.18s ease;
+      position: relative;
+    }
+    .option--radio .option__mark {
+      border-radius: 50%;
+    }
+    .option--check .option__mark {
+      border-radius: 5px;
+    }
+    .option__mark::after {
+      content: '';
+      position: absolute;
+      transition: all 0.18s ease;
+      opacity: 0;
+    }
+    .option--radio .option__mark::after {
+      inset: 3px;
+      background: var(--terra);
+      border-radius: 50%;
+    }
+    .option--check .option__mark::after {
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M3.5 8.5L6.5 11.5L12.5 4.5' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-size: 14px;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    .option input:checked ~ .option__mark {
+      border-color: var(--teal);
+    }
+    .option--check input:checked ~ .option__mark {
+      background: var(--teal);
+    }
+    .option input:checked ~ .option__mark::after {
+      opacity: 1;
+    }
+    .option:has(input:checked) {
+      background: #fff;
+      border-color: var(--teal);
+      color: var(--ink);
+      font-weight: 500;
+      box-shadow: 0 2px 8px rgba(15, 61, 62, 0.1);
+    }
+    .option__text {
+      flex: 1;
+    }
+
+    .options__limit-note {
+      font-size: 12px;
+      color: var(--ink-faint);
+      margin-top: 8px;
+      font-family: 'Tajawal', sans-serif;
+    }
+    .options__limit-note.is-warning {
+      color: var(--terra);
+    }
+
+    /* ─────────────────────────────────────────────────────
+       SELECT
+       ───────────────────────────────────────────────────── */
+    .select-wrap {
+      position: relative;
+    }
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-30%) rotate(45deg);
+      width: 8px;
+      height: 8px;
+      border-right: 1.5px solid var(--ink-faint);
+      border-bottom: 1.5px solid var(--ink-faint);
+      pointer-events: none;
+    }
+    .select {
+      width: 100%;
+      padding: 14px 16px;
+      padding-left: 40px;
+      background: var(--paper-soft);
+      border: 1.5px solid var(--line-soft);
+      border-radius: var(--radius-md);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 15px;
+      color: var(--ink);
+      appearance: none;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .select:hover { border-color: var(--gold); }
+    .select:focus {
+      outline: none;
+      border-color: var(--teal);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(15, 61, 62, 0.12);
+    }
+    .select:invalid { color: var(--ink-faint); }
+
+    /* ─────────────────────────────────────────────────────
+       TEXTAREA
+       ───────────────────────────────────────────────────── */
+    .textarea {
+      width: 100%;
+      min-height: 96px;
+      padding: 16px;
+      background: var(--paper-soft);
+      border: 1.5px solid var(--line-soft);
+      border-radius: var(--radius-md);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--ink);
+      resize: vertical;
+      transition: all 0.18s ease;
+    }
+    .textarea:hover { border-color: var(--gold); }
+    .textarea:focus {
+      outline: none;
+      border-color: var(--teal);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(15, 61, 62, 0.12);
+    }
+    .textarea::placeholder {
+      color: var(--ink-faint);
+      opacity: 0.7;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       SLIDER (RATING)
+       ───────────────────────────────────────────────────── */
+    .rating {
+      background: var(--paper-soft);
+      border: 1.5px solid var(--line-soft);
+      border-radius: var(--radius-md);
+      padding: 24px 20px 18px;
+    }
+    .rating__display {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .rating__value {
+      font-family: 'El Messiri', serif;
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--teal);
+      line-height: 1;
+      min-width: 48px;
+      text-align: center;
+      transition: color 0.2s ease;
+    }
+    .rating__value.is-high { color: var(--terra); }
+    .rating__divider {
+      font-family: 'El Messiri', serif;
+      font-size: 24px;
+      color: var(--ink-faint);
+    }
+    .rating__max {
+      font-family: 'El Messiri', serif;
+      font-size: 24px;
+      color: var(--ink-faint);
+    }
+    .rating__label {
+      text-align: center;
+      font-size: 13px;
+      color: var(--ink-faint);
+      margin-bottom: 16px;
+      min-height: 18px;
+    }
+    .rating__slider {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: var(--line);
+      border-radius: 100px;
+      outline: none;
+      direction: ltr;
+    }
+    .rating__slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 26px;
+      height: 26px;
+      background: var(--teal);
+      border: 3px solid var(--paper-soft);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(15, 61, 62, 0.3);
+      transition: transform 0.15s ease;
+    }
+    .rating__slider::-webkit-slider-thumb:hover { transform: scale(1.1); }
+    .rating__slider::-webkit-slider-thumb:active { transform: scale(1.2); }
+    .rating__slider::-moz-range-thumb {
+      width: 26px;
+      height: 26px;
+      background: var(--teal);
+      border: 3px solid var(--paper-soft);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(15, 61, 62, 0.3);
+    }
+    .rating__scale {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 11px;
+      color: var(--ink-faint);
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    /* ─────────────────────────────────────────────────────
+       SUBMIT
+       ───────────────────────────────────────────────────── */
+    .submit-area {
+      margin-top: 60px;
+      text-align: center;
+    }
+    .submit-area__note {
+      font-size: 13.5px;
+      color: var(--ink-faint);
+      margin-bottom: 20px;
+      line-height: 1.6;
+      max-width: 360px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+    .submit-btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 18px 44px;
+      font-family: 'El Messiri', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--paper-soft);
+      background: var(--teal);
+      border: none;
+      border-radius: 100px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      letter-spacing: 0.02em;
+      box-shadow: 0 4px 16px rgba(15, 61, 62, 0.25);
+      overflow: hidden;
+    }
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--terra), var(--gold));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .submit-btn span {
+      position: relative;
+      z-index: 1;
+    }
+    .submit-btn svg {
+      position: relative;
+      z-index: 1;
+      transition: transform 0.25s ease;
+    }
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(15, 61, 62, 0.35);
+    }
+    .submit-btn:hover:not(:disabled)::before { opacity: 1; }
+    .submit-btn:hover:not(:disabled) svg { transform: translateX(-4px); }
+    .submit-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .submit-btn.is-loading {
+      pointer-events: none;
+    }
+    .submit-btn.is-loading span {
+      opacity: 0.4;
+    }
+    .submit-btn__spinner {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      z-index: 2;
+    }
+    .submit-btn.is-loading .submit-btn__spinner { display: block; }
+    @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+    /* ─────────────────────────────────────────────────────
+       VALIDATION
+       ───────────────────────────────────────────────────── */
+    .field-error {
+      display: none;
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--terra);
+      font-weight: 500;
+    }
+    .q.has-error .field-error { display: block; }
+    .q.has-error .option,
+    .q.has-error .select,
+    .q.has-error .textarea,
+    .q.has-error .rating {
+      border-color: var(--terra);
+    }
+    .form-error-banner {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 18px;
+      background: rgba(184, 69, 31, 0.08);
+      border: 1px solid var(--terra);
+      border-radius: var(--radius-md);
+      color: var(--terra);
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .form-error-banner.is-visible { display: block; }
+
+    /* ─────────────────────────────────────────────────────
+       THANK YOU SCREEN
+       ───────────────────────────────────────────────────── */
+    .thank-you {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: var(--paper);
+      padding: 40px 20px;
+      overflow-y: auto;
+    }
+    .thank-you.is-visible {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.6s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .thank-you__inner {
+      max-width: 520px;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .thank-you__seal {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 28px;
+      border-radius: 50%;
+      background: var(--teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: sealPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+      box-shadow: 0 8px 32px rgba(15, 61, 62, 0.25);
+    }
+    @keyframes sealPop {
+      from { transform: scale(0) rotate(-180deg); opacity: 0; }
+      to { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    .thank-you__seal svg {
+      width: 36px;
+      height: 36px;
+      stroke: var(--paper-soft);
+    }
+    .thank-you__mark {
+      font-family: 'El Messiri', serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      color: var(--terra);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      animation: fadeUp 0.5s ease 0.5s both;
+    }
+    .thank-you__title {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(40px, 10vw, 56px);
+      font-weight: 700;
+      color: var(--teal);
+      line-height: 1;
+      margin-bottom: 20px;
+      animation: fadeUp 0.6s ease 0.6s both;
+    }
+    .thank-you__msg {
+      font-family: 'El Messiri', serif;
+      font-size: 18px;
+      color: var(--ink-soft);
+      line-height: 1.7;
+      max-width: 420px;
+      margin: 0 auto 32px;
+      animation: fadeUp 0.6s ease 0.8s both;
+    }
+    .thank-you__divider {
+      width: 80px;
+      height: 1px;
+      background: var(--line);
+      margin: 32px auto;
+      position: relative;
+      animation: fadeUp 0.6s ease 1s both;
+    }
+    .thank-you__divider::before,
+    .thank-you__divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 5px;
+      height: 5px;
+      background: var(--terra);
+      border-radius: 50%;
+      transform: translateY(-50%);
+    }
+    .thank-you__divider::before { left: -12px; }
+    .thank-you__divider::after { right: -12px; }
+    .thank-you__close {
+      font-family: 'El Messiri', serif;
+      font-size: 15px;
+      color: var(--ink-faint);
+      animation: fadeUp 0.6s ease 1.2s both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─────────────────────────────────────────────────────
+       PRIVACY NOTE
+       ───────────────────────────────────────────────────── */
+    .privacy {
+      margin-top: 16px;
+      padding: 12px 16px;
+      background: rgba(15, 61, 62, 0.04);
+      border-right: 3px solid var(--teal);
+      border-radius: 4px;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+      line-height: 1.6;
+    }
+    .privacy svg {
+      display: inline-block;
+      vertical-align: middle;
+      margin-left: 4px;
+      stroke: var(--teal);
+    }
+
+    /* ─────────────────────────────────────────────────────
+       RESPONSIVE TWEAKS
+       ───────────────────────────────────────────────────── */
+    @media (max-width: 480px) {
+      .section__num { font-size: 36px; }
+      .section__sub { margin-right: 56px; }
+      .intro { padding: 24px 18px; }
+      .submit-btn { padding: 16px 32px; font-size: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Progress bar -->
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <main>
+
+    <!-- Hero -->
+    <header class="hero">
+      <div class="hero__mark">
+        <span>هختار صحتي</span>
+        <span class="hero__mark-dot"></span>
+        <span>2026</span>
+      </div>
+      <h1 class="hero__title">بصمتك</h1>
+      <p class="hero__subtitle">صوتك بيوصل. كلامك بيكتب الكامب اللي جاي.</p>
+      <div class="hero__divider"></div>
+    </header>
+
+    <!-- Intro letter -->
+    <section class="intro">
+      <p>يا صاحبي، إحنا في الكامب ده <strong>تعلمنا منك أكتر من اللي علمناك.</strong> قعدنا نتفرج عليك، نشوفك بتتفاعل مع إيه ومش بتتفاعل مع إيه، إيه اللي بيلمسك وإيه اللي بيدوّخك.</p>
+      <p>الصفحة دي اسمها بصمتك. مش تقييم. مش امتحان. <strong>مفيش اسم، مفيش حد هيقعد يقول "فلان قال كذا."</strong></p>
+      <p>التقرير اللي هنرفعه للوزارة بعد الكامب هيتبني على كلامك. مش على كلامنا. لو هترغي فيها، خلاص ضيعت الفرصة. لو هتكتبها بصدق، حتى لو الصدق ده انتقاد — <strong>إنت اللي بتكتب الكامب الجاي.</strong></p>
+      <p>عشر دقايق بس. وبعدها على طول السمر.</p>
+      <div class="intro__signature">
+        <span class="intro__signature-line"></span>
+        <span>فريق الكامب</span>
+        <span class="intro__signature-line"></span>
+      </div>
+    </section>
+
+    <form id="surveyForm" novalidate>
+
+      <!-- ═══════════════════════════════════════════════
+           SECTION 1: WHO ARE YOU?
+           ═══════════════════════════════════════════════ -->
+      <section class="section" data-section="1">
+        <div class="section__head">
+          <span class="section__num">٠١</span>
+          <h2 class="section__title">إنت مين؟</h2>
+        </div>
+        <p class="section__sub">أربع حاجات سريعة عشان نفهم إنت قاعد منين بتكلمنا.</p>
+
+        <!-- Q1 -->
+        <div class="q" data-q="age">
+          <label class="q__label">عمرك في أنهي شريحة؟</label>
+          <div class="options options--grid">
+            <label class="option option--radio"><input type="radio" name="age" value="17-19" required><span class="option__mark"></span><span class="option__text">١٧ - ١٩ سنة</span></label>
+            <label class="option option--radio"><input type="radio" name="age" value="20-23"><span class="option__mark"></span><span class="option__text">٢٠ - ٢٣ سنة</span></label>
+            <label class="option option--radio"><input type="radio" name="age" value="24-29"><span class="option__mark"></span><span class="option__text">٢٤ - ٢٩ سنة</span></label>
+            <label class="option option--radio"><input type="radio" name="age" value="30-39"><span class="option__mark"></span><span class="option__text">٣٠ - ٣٩ سنة</span></label>
+            <label class="option option--radio"><input type="radio" name="age" value="40+"><span class="option__mark"></span><span class="option__text">٤٠ سنة وأكتر</span></label>
+          </div>
+          <div class="field-error">دي حاجة محتاجين نعرفها.</div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="q" data-q="status">
+          <label class="q__label">وضعك دلوقتي إيه؟</label>
+          <div class="options">
+            <label class="option option--radio"><input type="radio" name="status" value="thanawi" required><span class="option__mark"></span><span class="option__text">طالب ثانوي</span></label>
+            <label class="option option--radio"><input type="radio" name="status" value="university"><span class="option__mark"></span><span class="option__text">طالب جامعي</span></label>
+            <label class="option option--radio"><input type="radio" name="status" value="grad-unemployed"><span class="option__mark"></span><span class="option__text">خريج لسه مش شغّال</span></label>
+            <label class="option option--radio"><input type="radio" name="status" value="employed"><span class="option__mark"></span><span class="option__text">شغّال</span></label>
+            <label class="option option--radio"><input type="radio" name="status" value="not-working"><span class="option__mark"></span><span class="option__text">مش شغّال ومش بادرس</span></label>
+            <label class="option option--radio"><input type="radio" name="status" value="business-owner"><span class="option__mark"></span><span class="option__text">صاحب شغل أو مشروع خاص</span></label>
+          </div>
+          <div class="field-error">دي حاجة محتاجين نعرفها.</div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="q" data-q="governorate">
+          <label class="q__label" for="governorate">إنت من أنهي محافظة؟</label>
+          <div class="select-wrap">
+            <select class="select" name="governorate" id="governorate" required>
+              <option value="" disabled selected>اختار من القائمة</option>
+              <option value="cairo">القاهرة</option>
+              <option value="giza">الجيزة</option>
+              <option value="alex">الإسكندرية</option>
+              <option value="qalyubia">القليوبية</option>
+              <option value="beheira">البحيرة</option>
+              <option value="monufia">المنوفية</option>
+              <option value="gharbia">الغربية</option>
+              <option value="dakahlia">الدقهلية</option>
+              <option value="kafr-elsheikh">كفر الشيخ</option>
+              <option value="sharqia">الشرقية</option>
+              <option value="damietta">دمياط</option>
+              <option value="port-said">بورسعيد</option>
+              <option value="ismailia">الإسماعيلية</option>
+              <option value="suez">السويس</option>
+              <option value="north-sinai">شمال سيناء</option>
+              <option value="south-sinai">جنوب سيناء</option>
+              <option value="red-sea">البحر الأحمر</option>
+              <option value="new-valley">الوادي الجديد</option>
+              <option value="matrouh">مطروح</option>
+              <option value="fayoum">الفيوم</option>
+              <option value="beni-suef">بني سويف</option>
+              <option value="minya">المنيا</option>
+              <option value="asyut">أسيوط</option>
+              <option value="sohag">سوهاج</option>
+              <option value="qena">قنا</option>
+              <option value="luxor">الأقصر</option>
+              <option value="aswan">أسوان</option>
+            </select>
+          </div>
+          <div class="field-error">اختار محافظتك من فضلك.</div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="q" data-q="smoking">
+          <label class="q__label">علاقتك بالتدخين دلوقتي؟</label>
+          <div class="options">
+            <label class="option option--radio"><input type="radio" name="smoking" value="current-smoker" required><span class="option__mark"></span><span class="option__text">بدخّن دلوقتي</span></label>
+            <label class="option option--radio"><input type="radio" name="smoking" value="ex-smoker"><span class="option__mark"></span><span class="option__text">كنت بدخّن وبطّلت</span></label>
+            <label class="option option--radio"><input type="radio" name="smoking" value="tried"><span class="option__mark"></span><span class="option__text">جربت ومكملتش</span></label>
+            <label class="option option--radio"><input type="radio" name="smoking" value="never"><span class="option__mark"></span><span class="option__text">ما جربتش خالص</span></label>
+            <label class="option option--radio"><input type="radio" name="smoking" value="shisha-only"><span class="option__mark"></span><span class="option__text">بدخّن شيشة بس مش سجاير</span></label>
+            <label class="option option--radio"><input type="radio" name="smoking" value="vape"><span class="option__mark"></span><span class="option__text">بدخّن إلكتروني (فايب أو IQOS)</span></label>
+          </div>
+          <div class="field-error">قلنا، إحنا مش بنحكم. كلامك مجهول الهوية.</div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════
+           SECTION 2: WHY ARE YOU HERE?
+           ═══════════════════════════════════════════════ -->
+      <section class="section" data-section="2">
+        <div class="section__head">
+          <span class="section__num">٠٢</span>
+          <h2 class="section__title">ليه إنت هنا؟</h2>
+        </div>
+        <p class="section__sub">إيه اللي جابك للكامب، وإيه اللي كنت متوقعه لما عرفت إنك جاي؟</p>
+
+        <!-- Q5 -->
+        <div class="q" data-q="motivation">
+          <label class="q__label">
+            اللي جابك للكامب إيه؟
+            <span class="q__hint">(تقدر تختار أكتر من إجابة)</span>
+          </label>
+          <div class="options">
+            <label class="option option--check"><input type="checkbox" name="motivation" value="curiosity"><span class="option__mark"></span><span class="option__text">فضول وعايز أعرف الكامب ده عن إيه</span></label>
+            <label class="option option--check"><input type="checkbox" name="motivation" value="referral"><span class="option__mark"></span><span class="option__text">ناس قالولي عنه فحبيت أجرب</span></label>
+            <label class="option option--check"><input type="checkbox" name="motivation" value="quit"><span class="option__mark"></span><span class="option__text">بدخّن وعايز أبطّل</span></label>
+            <label class="option option--check"><input type="checkbox" name="motivation" value="self-discovery"><span class="option__mark"></span><span class="option__text">محبش أبطّل بس عايز أعرف أكتر عن نفسي</span></label>
+            <label class="option option--check"><input type="checkbox" name="motivation" value="help-others"><span class="option__mark"></span><span class="option__text">صاحب أو قريب بيدخن وعايز أساعده</span></label>
+            <label class="option option--check"><input type="checkbox" name="motivation" value="fun"><span class="option__mark"></span><span class="option__text">الجو والترفيه والأنشطة</span></label>
+            <label class="option option--check"><input type="checkbox" name="motivation" value="certificate"><span class="option__mark"></span><span class="option__text">الشهادة أو الفايدة الرسمية</span></label>
+            <label class="option option--check"><input type="checkbox" name="motivation" value="dont-know"><span class="option__mark"></span><span class="option__text">مش عارف بصراحة، شفت نفسي هنا</span></label>
+          </div>
+          <div class="field-error">اختار حاجة واحدة على الأقل.</div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="q" data-q="expectations">
+          <label class="q__label">قبل ما تيجي، كنت متوقع تلاقي إيه هنا؟</label>
+          <textarea class="textarea" name="expectations" placeholder="سطر أو سطرين بس. اللي كان في دماغك قبل ما تركب العربية وتيجي." required></textarea>
+          <div class="field-error">سطر واحد بس. اللي كان في بالك.</div>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════
+           SECTION 3: WHAT DID YOU FEEL?
+           ═══════════════════════════════════════════════ -->
+      <section class="section" data-section="3">
+        <div class="section__head">
+          <span class="section__num">٠٣</span>
+          <h2 class="section__title">إيه اللي حسّيته جوّاك؟</h2>
+        </div>
+        <p class="section__sub">دلوقتي خليك صادق. الإجابات دي مش لينا، دي ليك إنت أول حاجة.</p>
+
+        <!-- Q7 -->
+        <div class="q" data-q="touched">
+          <label class="q__label">أكتر فقرة أو لحظة لمستك في الكامب لحد دلوقتي إيه؟ وليه؟</label>
+          <textarea class="textarea" name="touched" placeholder="ممكن تكون ورشة، حد قال حاجة، لحظة سمعتها أو شفتها. اللي قعد في دماغك بعدها." required></textarea>
+          <div class="field-error">شاركنا اللحظة دي. مهمة.</div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="q" data-q="changed">
+          <label class="q__label">في حاجة سمعتها أو شفتها هنا غيّرت في تفكيرك أو خلتك تشوفها بشكل مختلف؟</label>
+          <textarea class="textarea" name="changed" placeholder="حتى لو حاجة بسيطة. كلمة. فكرة. تجربة حد. لو مفيش، اكتب 'مفيش' وكمّل."></textarea>
+        </div>
+
+        <!-- Q9 -->
+        <div class="q" data-q="rating">
+          <label class="q__label">على مقياس من ١ لـ ١٠، تقييمك للكامب لحد دلوقتي كام؟</label>
+          <div class="rating">
+            <div class="rating__display">
+              <span class="rating__value" id="ratingValue">٧</span>
+              <span class="rating__divider">/</span>
+              <span class="rating__max">١٠</span>
+            </div>
+            <div class="rating__label" id="ratingLabel">حرّك السلايدر</div>
+            <input type="range" min="1" max="10" value="7" class="rating__slider" name="rating" id="ratingSlider">
+            <div class="rating__scale">
+              <span>١</span>
+              <span>٥</span>
+              <span>١٠</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="q" data-q="missing">
+          <label class="q__label">في حاجة حسيت إنها ناقصة، أو ممكن كانت تتعمل بشكل مختلف؟</label>
+          <textarea class="textarea" name="missing" placeholder="انتقادك هنا أهم من مديحك. خليك صريح."></textarea>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════
+           SECTION 4: WHAT DO YOU NEED?
+           ═══════════════════════════════════════════════ -->
+      <section class="section" data-section="4">
+        <div class="section__head">
+          <span class="section__num">٠٤</span>
+          <h2 class="section__title">إنت محتاج إيه؟</h2>
+        </div>
+        <p class="section__sub">القسم ده بيكتب الكامب الجاي. اللي هتقوله هنا هيوصل لشباب زيك.</p>
+
+        <!-- Q11 -->
+        <div class="q" data-q="challenges" data-max="3">
+          <label class="q__label">أكبر تحدي بتواجهه في حياتك دلوقتي؟ <span class="q__hint">(اختار حتى ٣)</span></label>
+          <div class="options">
+            <label class="option option--check"><input type="checkbox" name="challenges" value="study"><span class="option__mark"></span><span class="option__text">الدراسة والمذاكرة وضغطها</span></label>
+            <label class="option option--check"><input type="checkbox" name="challenges" value="work"><span class="option__mark"></span><span class="option__text">الشغل أو البطالة</span></label>
+            <label class="option option--check"><input type="checkbox" name="challenges" value="money"><span class="option__mark"></span><span class="option__text">الفلوس والأمان المالي</span></label>
+            <label class="option option--check"><input type="checkbox" name="challenges" value="family"><span class="option__mark"></span><span class="option__text">علاقات الأهل</span></label>
+            <label class="option option--check"><input type="checkbox" name="challenges" value="friends"><span class="option__mark"></span><span class="option__text">علاقات الأصحاب</span></label>
+            <label class="option option--check"><input type="checkbox" name="challenges" value="romance"><span class="option__mark"></span><span class="option__text">علاقات عاطفية</span></label>
+            <label class="option option--check"><input type="checkbox" name="challenges" value="mental-health"><span class="option__mark"></span><span class="option__text">الصحة النفسية (قلق، اكتئاب، توهان)</span></label>
+            <label class="option option--check"><input type="checkbox" name="challenges" value="physical-health"><span class="option__mark"></span><span class="option__text">الصحة الجسدية</span></label>
+            <label class="option option--check"><input type="checkbox" name="challenges" value="purpose"><span class="option__mark"></span><span class="option__text">الإحساس إني مش لاقي هدف ولا اتجاه</span></label>
+            <label class="option option--check"><input type="checkbox" name="challenges" value="addiction"><span class="option__mark"></span><span class="option__text">إدمان (تدخين، سوشيال ميديا، إلخ)</span></label>
+            <label class="option option--check"><input type="checkbox" name="challenges" value="none"><span class="option__mark"></span><span class="option__text">مفيش تحديات حقيقية بصراحة</span></label>
+          </div>
+          <div class="options__limit-note">اختار حتى ٣ من فضلك</div>
+          <div class="field-error">اختار على الأقل حاجة واحدة.</div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="q" data-q="topics" data-max="3">
+          <label class="q__label">لو فيه كامب جاي، أكتر موضوع تحب يتغطى فيه إيه؟ <span class="q__hint">(اختار حتى ٣)</span></label>
+          <div class="options">
+            <label class="option option--check"><input type="checkbox" name="topics" value="mental-health"><span class="option__mark"></span><span class="option__text">الصحة النفسية والقلق والاكتئاب</span></label>
+            <label class="option option--check"><input type="checkbox" name="topics" value="life-skills"><span class="option__mark"></span><span class="option__text">مهارات الحياة العملية</span></label>
+            <label class="option option--check"><input type="checkbox" name="topics" value="confidence"><span class="option__mark"></span><span class="option__text">بناء الشخصية والثقة بالنفس</span></label>
+            <label class="option option--check"><input type="checkbox" name="topics" value="career"><span class="option__mark"></span><span class="option__text">الشغل والمهارات المهنية</span></label>
+            <label class="option option--check"><input type="checkbox" name="topics" value="finance"><span class="option__mark"></span><span class="option__text">الفلوس وريادة الأعمال</span></label>
+            <label class="option option--check"><input type="checkbox" name="topics" value="physical"><span class="option__mark"></span><span class="option__text">الصحة الجسدية والرياضة</span></label>
+            <label class="option option--check"><input type="checkbox" name="topics" value="social"><span class="option__mark"></span><span class="option__text">العلاقات والذكاء الاجتماعي</span></label>
+            <label class="option option--check"><input type="checkbox" name="topics" value="addictions"><span class="option__mark"></span><span class="option__text">الإدمانات بأنواعها</span></label>
+            <label class="option option--check"><input type="checkbox" name="topics" value="identity"><span class="option__mark"></span><span class="option__text">الهوية والقيم والدين</span></label>
+            <label class="option option--check"><input type="checkbox" name="topics" value="relationships"><span class="option__mark"></span><span class="option__text">العلاقات العاطفية والزواج</span></label>
+            <label class="option option--check"><input type="checkbox" name="topics" value="tech"><span class="option__mark"></span><span class="option__text">التكنولوجيا والذكاء الاصطناعي</span></label>
+          </div>
+          <div class="options__limit-note">اختار حتى ٣ من فضلك</div>
+          <div class="field-error">اختار على الأقل موضوع واحد.</div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="q" data-q="ifMinistry">
+          <label class="q__label">لو كنت مكان وزارة الشباب، إيه أهم حاجة كنت هتعملها لشباب جيلك؟</label>
+          <textarea class="textarea" name="ifMinistry" placeholder="هنا إنت اللي بتقرر. اكتب اللي في دماغك بدون فلتر."></textarea>
+        </div>
+      </section>
+
+      <!-- ═══════════════════════════════════════════════
+           SECTION 5: AFTER THE CAMP?
+           ═══════════════════════════════════════════════ -->
+      <section class="section" data-section="5">
+        <div class="section__head">
+          <span class="section__num">٠٥</span>
+          <h2 class="section__title">بعد الكامب؟</h2>
+        </div>
+        <p class="section__sub">آخر سؤالين. وعدنا ١٠ دقايق وقرّبنا نخلص.</p>
+
+        <!-- Q14 -->
+        <div class="q" data-q="continue">
+          <label class="q__label">بعد الكامب، عايز تكمّل التواصل معانا؟</label>
+          <div class="options">
+            <label class="option option--radio"><input type="radio" name="continue" value="ambassador" required><span class="option__mark"></span><span class="option__text">أيوه، عايز أكون سفير في محافظتي</span></label>
+            <label class="option option--radio"><input type="radio" name="continue" value="participant"><span class="option__mark"></span><span class="option__text">أيوه، أحب أحضر الكامبات الجاية كمشارك</span></label>
+            <label class="option option--radio"><input type="radio" name="continue" value="volunteer"><span class="option__mark"></span><span class="option__text">أيوه، أحب أساعد كمتطوع</span></label>
+            <label class="option option--radio"><input type="radio" name="continue" value="not-sure"><span class="option__mark"></span><span class="option__text">مش متأكد لسه</span></label>
+            <label class="option option--radio"><input type="radio" name="continue" value="enough"><span class="option__mark"></span><span class="option__text">لأ، الكامب ده يكفي</span></label>
+          </div>
+          <div class="field-error">اختار حاجة من فضلك.</div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="q" data-q="final">
+          <label class="q__label">
+            حد تحب تشكره، أو حاجة أخيرة عايز تقولها؟
+            <span class="q__optional">اختياري</span>
+          </label>
+          <textarea class="textarea" name="final" placeholder="مساحة فاضية. لك إنت."></textarea>
+        </div>
+
+        <div class="privacy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          إجاباتك مجهولة الهوية تماماً، بتُحفظ بشكل آمن، ومش بنخزن أي بيانات شخصية بتعرّفك.
+        </div>
+      </section>
+
+      <!-- Submit -->
+      <div class="submit-area">
+        <p class="submit-area__note">شكراً إنك وصلت لهنا. اللي كتبته هيوصل، وهيغيّر حاجة فعلاً.</p>
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span>صوتك يوصل</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span class="submit-btn__spinner"></span>
+        </button>
+        <div class="form-error-banner" id="formErrorBanner">
+          في حاجات ناقصة فوق. ارجع وكمّلها وإحنا مستنيين.
+        </div>
+      </div>
+
+    </form>
+
+  </main>
+
+  <!-- Thank you screen -->
+  <div class="thank-you" id="thankYou">
+    <div class="thank-you__inner">
+      <div class="thank-you__seal">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <p class="thank-you__mark">بصمتك اتسجلت</p>
+      <h1 class="thank-you__title">صوتك وصل.</h1>
+      <p class="thank-you__msg">
+        إحنا هنقرا اللي كتبته الليلة قبل ما ننام.<br>
+        وبكره الصبح هتسمع ٣ حاجات قلتوها انتم.<br>
+        دلوقتي يلا، السمر مستنيك.
+      </p>
+      <div class="thank-you__divider"></div>
+      <p class="thank-you__close">— فريق الكامب</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════
+       FIREBASE + FORM LOGIC
+       ════════════════════════════════════════════════════ -->
+  <script type="module">
+
+    // ──────────────────────────────────────────────────
+    // FIREBASE CONFIG — املأ القيم دي قبل ما ترفع الصفحة
+    //
+    // ١. ادخل على https://console.firebase.google.com
+    // ٢. اعمل مشروع جديد
+    // ٣. اضغط على </> عشان تضيف Web App
+    // ٤. انسخ القيم من firebaseConfig وحطها هنا
+    // ٥. فعّل Firestore Database (Production mode)
+    // ٦. في Firestore Rules، حط الـ Rules اللي في README
+    // ──────────────────────────────────────────────────
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+            authDomain: "life-makers-diagnostic.firebaseapp.com",
+            projectId: "life-makers-diagnostic",
+            storageBucket: "life-makers-diagnostic.appspot.com",
+            messagingSenderId: "137599837774",
+            appId: "1:137599837774:web:e5f2f6a5c547c265fc0fba"
+    };
+
+    const COLLECTION_NAME = 'responses_camp_round_1';
+
+    // ──────────────────────────────────────────────────
+    // FIREBASE INITIALIZATION (with localStorage fallback)
+    // ──────────────────────────────────────────────────
+    let firebaseReady = false;
+    let db = null;
+    let addDoc, collection, serverTimestamp;
+
+    async function initFirebase() {
+      const isPlaceholder = firebaseConfig.apiKey === "YOUR_API_KEY_HERE";
+      if (isPlaceholder) {
+        console.warn('⚠️ Firebase not configured. Responses will be saved to localStorage only.');
+        return;
+      }
+      try {
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js");
+        const firestoreModule = await import("https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js");
+        const app = initializeApp(firebaseConfig);
+        db = firestoreModule.getFirestore(app);
+        addDoc = firestoreModule.addDoc;
+        collection = firestoreModule.collection;
+        serverTimestamp = firestoreModule.serverTimestamp;
+        firebaseReady = true;
+        console.log('✓ Firebase ready');
+      } catch (err) {
+        console.error('Firebase init failed, falling back to localStorage:', err);
+      }
+    }
+    initFirebase();
+
+    // ──────────────────────────────────────────────────
+    // SESSION & METADATA
+    // ──────────────────────────────────────────────────
+    function generateSessionId() {
+      return 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+    function detectDeviceType() {
+      const w = window.innerWidth;
+      if (w < 768) return 'mobile';
+      if (w < 1024) return 'tablet';
+      return 'desktop';
+    }
+    function getGroupFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const g = params.get('group');
+      if (g && ['A', 'a'].includes(g)) return 'A';
+      if (g && ['B', 'b'].includes(g)) return 'B';
+      return 'unspecified';
+    }
+
+    const SESSION = {
+      id: generateSessionId(),
+      device: detectDeviceType(),
+      group: getGroupFromUrl(),
+      pageLoadTime: Date.now(),
+      userAgent: navigator.userAgent.substring(0, 200)
+    };
+
+    // ──────────────────────────────────────────────────
+    // PROGRESS BAR (scroll-based)
+    // ──────────────────────────────────────────────────
+    const progressFill = document.getElementById('progressFill');
+    function updateProgress() {
+      const scrolled = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = Math.min(100, (scrolled / docHeight) * 100);
+      progressFill.style.width = pct + '%';
+    }
+    window.addEventListener('scroll', updateProgress, { passive: true });
+    updateProgress();
+
+    // ──────────────────────────────────────────────────
+    // SECTION REVEAL ON SCROLL
+    // ──────────────────────────────────────────────────
+    const sections = document.querySelectorAll('.section');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
+    sections.forEach(s => observer.observe(s));
+
+    // ──────────────────────────────────────────────────
+    // RATING SLIDER
+    // ──────────────────────────────────────────────────
+    const slider = document.getElementById('ratingSlider');
+    const ratingValue = document.getElementById('ratingValue');
+    const ratingLabel = document.getElementById('ratingLabel');
+    const arabicNumerals = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩','١٠'];
+    const ratingLabels = {
+      1: 'مش حلو خالص',
+      2: 'مش حلو',
+      3: 'ضعيف',
+      4: 'متوسط لتحت',
+      5: 'متوسط',
+      6: 'كويس',
+      7: 'كويس قوي',
+      8: 'ممتاز',
+      9: 'هايل',
+      10: 'تجربة عمري'
+    };
+    function toArabic(n) {
+      return n === 10 ? '١٠' : arabicNumerals[n];
+    }
+    function updateRating() {
+      const v = parseInt(slider.value);
+      ratingValue.textContent = toArabic(v);
+      ratingLabel.textContent = ratingLabels[v];
+      if (v >= 8) {
+        ratingValue.classList.add('is-high');
+      } else {
+        ratingValue.classList.remove('is-high');
+      }
+    }
+    slider.addEventListener('input', updateRating);
+    updateRating();
+
+    // ──────────────────────────────────────────────────
+    // MULTI-SELECT MAX LIMIT (challenges, topics)
+    // ──────────────────────────────────────────────────
+    document.querySelectorAll('[data-max]').forEach(q => {
+      const max = parseInt(q.dataset.max);
+      const checks = q.querySelectorAll('input[type="checkbox"]');
+      const note = q.querySelector('.options__limit-note');
+
+      checks.forEach(chk => {
+        chk.addEventListener('change', () => {
+          const checked = q.querySelectorAll('input[type="checkbox"]:checked');
+          if (checked.length >= max) {
+            checks.forEach(c => {
+              if (!c.checked) c.disabled = true;
+            });
+            note.classList.add('is-warning');
+            note.textContent = `وصلت للحد الأقصى (${toArabic(max)})`;
+          } else {
+            checks.forEach(c => c.disabled = false);
+            note.classList.remove('is-warning');
+            note.textContent = `اختار حتى ${toArabic(max)} من فضلك`;
+          }
+        });
+      });
+    });
+
+    // ──────────────────────────────────────────────────
+    // CLEAR ERROR ON INTERACTION
+    // ──────────────────────────────────────────────────
+    document.querySelectorAll('.q').forEach(q => {
+      q.addEventListener('change', () => q.classList.remove('has-error'));
+      q.addEventListener('input', () => q.classList.remove('has-error'));
+    });
+
+    // ──────────────────────────────────────────────────
+    // FORM VALIDATION & SUBMISSION
+    // ──────────────────────────────────────────────────
+    const form = document.getElementById('surveyForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const errorBanner = document.getElementById('formErrorBanner');
+    const thankYou = document.getElementById('thankYou');
+
+    function validateForm() {
+      let firstError = null;
+      let valid = true;
+
+      // Required radios
+      ['age', 'status', 'smoking', 'continue'].forEach(name => {
+        const q = document.querySelector(`[data-q="${name}"]`);
+        const checked = form.querySelector(`input[name="${name}"]:checked`);
+        if (!checked) {
+          q.classList.add('has-error');
+          if (!firstError) firstError = q;
+          valid = false;
+        }
+      });
+
+      // Required select
+      const govQ = document.querySelector('[data-q="governorate"]');
+      const govSel = form.querySelector('[name="governorate"]');
+      if (!govSel.value) {
+        govQ.classList.add('has-error');
+        if (!firstError) firstError = govQ;
+        valid = false;
+      }
+
+      // Required checkbox group (motivation)
+      const motiQ = document.querySelector('[data-q="motivation"]');
+      const motiChecked = form.querySelectorAll('input[name="motivation"]:checked');
+      if (motiChecked.length === 0) {
+        motiQ.classList.add('has-error');
+        if (!firstError) firstError = motiQ;
+        valid = false;
+      }
+
+      // Required textareas (expectations, touched)
+      ['expectations', 'touched'].forEach(name => {
+        const q = document.querySelector(`[data-q="${name}"]`);
+        const ta = form.querySelector(`textarea[name="${name}"]`);
+        if (!ta.value.trim()) {
+          q.classList.add('has-error');
+          if (!firstError) firstError = q;
+          valid = false;
+        }
+      });
+
+      return { valid, firstError };
+    }
+
+    function getCheckboxValues(name) {
+      return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`)).map(c => c.value);
+    }
+
+    function collectAnswers() {
+      return {
+        age: form.elements['age'].value || null,
+        status: form.elements['status'].value || null,
+        governorate: form.elements['governorate'].value || null,
+        smoking: form.elements['smoking'].value || null,
+        motivation: getCheckboxValues('motivation'),
+        expectations: form.elements['expectations'].value.trim(),
+        touched: form.elements['touched'].value.trim(),
+        changed: form.elements['changed'].value.trim(),
+        rating: parseInt(form.elements['rating'].value),
+        missing: form.elements['missing'].value.trim(),
+        challenges: getCheckboxValues('challenges'),
+        topics: getCheckboxValues('topics'),
+        ifMinistry: form.elements['ifMinistry'].value.trim(),
+        continue: form.elements['continue'].value || null,
+        final: form.elements['final'].value.trim()
+      };
+    }
+
+    function buildPayload() {
+      const completionTime = Math.round((Date.now() - SESSION.pageLoadTime) / 1000);
+      return {
+        sessionId: SESSION.id,
+        group: SESSION.group,
+        device: SESSION.device,
+        userAgent: SESSION.userAgent,
+        completionTimeSeconds: completionTime,
+        clientTimestamp: new Date().toISOString(),
+        ...collectAnswers()
+      };
+    }
+
+    async function saveToFirebase(payload) {
+      if (!firebaseReady) return false;
+      try {
+        const docRef = await addDoc(collection(db, COLLECTION_NAME), {
+          ...payload,
+          serverTimestamp: serverTimestamp()
+        });
+        console.log('✓ Saved to Firebase:', docRef.id);
+        return true;
+      } catch (err) {
+        console.error('Firebase save failed:', err);
+        return false;
+      }
+    }
+
+    function saveToLocalStorage(payload) {
+      try {
+        const key = 'basmatak_responses';
+        const existing = JSON.parse(localStorage.getItem(key) || '[]');
+        existing.push(payload);
+        localStorage.setItem(key, JSON.stringify(existing));
+        console.log('✓ Saved to localStorage. Total:', existing.length);
+        return true;
+      } catch (err) {
+        console.error('localStorage save failed:', err);
+        return false;
+      }
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorBanner.classList.remove('is-visible');
+
+      const { valid, firstError } = validateForm();
+
+      if (!valid) {
+        errorBanner.classList.add('is-visible');
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+
+      submitBtn.classList.add('is-loading');
+      submitBtn.disabled = true;
+
+      const payload = buildPayload();
+
+      // Always save to localStorage as backup
+      saveToLocalStorage(payload);
+
+      // Try Firebase
+      const firebaseSaved = await saveToFirebase(payload);
+
+      // Show thank you regardless (data is in localStorage at minimum)
+      setTimeout(() => {
+        thankYou.classList.add('is-visible');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, firebaseSaved ? 400 : 200);
+    });
+
+  </script>
+
+</body>
+</html>
