@@ -817,6 +817,127 @@
     }
 
     /* ─────────────────────────────────────────────────────
+       OPTIONAL SECTION (Section 6)
+       ───────────────────────────────────────────────────── */
+    .section--optional {
+      position: relative;
+      margin-top: 80px;
+      padding-top: 56px;
+    }
+    .section--optional::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 50%;
+      transform: translateX(50%);
+      width: 120px;
+      height: 1px;
+      background: var(--line);
+    }
+    .section--optional::after {
+      content: '✦';
+      position: absolute;
+      top: -10px;
+      right: 50%;
+      transform: translateX(50%);
+      width: 24px;
+      height: 24px;
+      background: var(--paper);
+      color: var(--terra);
+      font-size: 16px;
+      text-align: center;
+      line-height: 24px;
+    }
+    .optional-frame {
+      background: linear-gradient(135deg, rgba(15, 61, 62, 0.04), rgba(184, 69, 31, 0.04));
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      margin-top: -8px;
+      margin-bottom: 32px;
+      font-size: 14.5px;
+      line-height: 1.8;
+      color: var(--ink-soft);
+    }
+    .optional-frame strong {
+      color: var(--teal);
+      font-weight: 600;
+    }
+    .optional-frame__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'El Messiri', serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      color: var(--terra);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      padding: 4px 10px;
+      background: rgba(184, 69, 31, 0.08);
+      border-radius: 100px;
+    }
+
+    /* Conditional contact field */
+    .conditional-field {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
+      margin-top: 0;
+    }
+    .conditional-field.is-visible {
+      max-height: 400px;
+      opacity: 1;
+      margin-top: 16px;
+    }
+    .conditional-field__inner {
+      background: rgba(15, 61, 62, 0.05);
+      border: 1.5px solid var(--teal);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+    }
+    .conditional-field__label {
+      font-family: 'El Messiri', serif;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--teal);
+      margin-bottom: 6px;
+      display: block;
+    }
+    .conditional-field__hint {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+    .text-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--paper-soft);
+      border: 1.5px solid var(--line-soft);
+      border-radius: var(--radius-sm);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 15px;
+      color: var(--ink);
+      transition: all 0.18s ease;
+      direction: ltr;
+      text-align: right;
+    }
+    .text-input:hover { border-color: var(--gold); }
+    .text-input:focus {
+      outline: none;
+      border-color: var(--teal);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(15, 61, 62, 0.12);
+    }
+    .text-input::placeholder {
+      color: var(--ink-faint);
+      opacity: 0.6;
+    }
+
+    /* ─────────────────────────────────────────────────────
        RESPONSIVE TWEAKS
        ───────────────────────────────────────────────────── */
     @media (max-width: 480px) {
@@ -848,7 +969,7 @@
       <div class="hero__divider"></div>
     </header>
 
-    <!-- Intro letter -->
+   <!-- Intro letter -->
     <section class="intro">
       <p>يا صاحبي، إحنا في الكامب ده <strong>صدقاً حضرتك ضفتلنا كتيير، وحابين تساعدنا أكتر.</strong> قعدنا نتابعك، نشوفك بتتفاعل مع إيه ومش بتتفاعل مع إيه، إيه اللي بيلمسك وإيه اللي بيفصلك.</p>
       <p>الصفحة دي اسمها "ضع بصمتك". مش تقييم. مش امتحان. <strong>مفيش اسم مطلوب تكتبه، مفيش حد هيقعد يقول "فلان قال كذا."</strong></p>
@@ -1104,7 +1225,7 @@
           <span class="section__num">٠٥</span>
           <h2 class="section__title">بعد الكامب؟</h2>
         </div>
-        <p class="section__sub">آخر سؤالين. وعدنا ١٠ دقايق وقرّبنا نخلص.</p>
+        <p class="section__sub">شارفنا على النهاية. سؤالين بس وبعدها قسم اختياري لو حابب.</p>
 
         <!-- Q14 -->
         <div class="q" data-q="continue">
@@ -1137,6 +1258,100 @@
         </div>
       </section>
 
+      <!-- ═══════════════════════════════════════════════
+           SECTION 6: AFTER THE CAMP — YOUR JOURNEY (OPTIONAL)
+           ═══════════════════════════════════════════════ -->
+      <section class="section section--optional" data-section="6">
+        <div class="section__head">
+          <span class="section__num">٠٦</span>
+          <h2 class="section__title">رحلتك الجاية</h2>
+        </div>
+
+        <div class="optional-frame">
+          <span class="optional-frame__badge">قسم اختياري</span>
+          <p>الجزء ده اختياري تماماً. لو خلصت اللي فوق، <strong>صوتك وصل بالفعل.</strong> لكن لو عندك ٣ دقايق إضافية، الإجابات اللي هنا هتأثر على حاجتين: تطبيق إلكتروني محتمل بنفكر فيه، ومسار خاص لشباب عايزين يحوّلوا الكامب لحاجة عملية. لو الموضوع لمسك، كمّل.</p>
+        </div>
+
+        <!-- Q16 -->
+        <div class="q" data-q="knownServices">
+          <label class="q__label">
+            من خبرتك ومن اللي شفته حواليك، إيه الخدمات اللي عرفتها بتساعد فعلاً اللي عايز يبطّل تدخين؟
+            <span class="q__optional">اختياري</span>
+          </label>
+          <textarea class="textarea" name="knownServices" placeholder="اكتب اللي تعرفه — حتى لو حاجات جربتها أو شفت غيرك بيستخدمها. مش لازم تكون متأكد إنها فعّالة. عايزين نفهم إيه الموجود في وعي الناس."></textarea>
+        </div>
+
+        <!-- Q17 -->
+        <div class="q" data-q="appWhatWouldRecommend">
+          <label class="q__label">
+            تخيل إن في تطبيق إلكتروني بيساعد اللي عايز يبطّل تدخين. إيه الحاجة اللي لو لقيتها فيه، تخليك ترشحه لصاحب أو قريب بيدخن؟
+            <span class="q__optional">اختياري</span>
+          </label>
+          <textarea class="textarea" name="appWhatWouldRecommend" placeholder="اكتب اللي تحس إنه فعلاً هيفرق — مش اللي مفروض يكون موجود."></textarea>
+        </div>
+
+        <!-- Q18 -->
+        <div class="q" data-q="appFeatures" data-max="3">
+          <label class="q__label">
+            من الحاجات دي، إيه أهم ٣ ميزات تشوفها لو في تطبيق ليه فعلاً قيمة؟
+            <span class="q__hint">(اختار حتى ٣)</span>
+            <span class="q__optional">اختياري</span>
+          </label>
+          <div class="options">
+            <label class="option option--check"><input type="checkbox" name="appFeatures" value="progress-tracking"><span class="option__mark"></span><span class="option__text">متابعة يومية لتقدمي (كم يوم بدون تدخين، كم وفّرت)</span></label>
+            <label class="option option--check"><input type="checkbox" name="appFeatures" value="community"><span class="option__mark"></span><span class="option__text">مجتمع شباب بيخوضوا نفس التجربة</span></label>
+            <label class="option option--check"><input type="checkbox" name="appFeatures" value="psych-support"><span class="option__mark"></span><span class="option__text">متخصص نفسي بقدر أتكلم معاه وقت الأزمة</span></label>
+            <label class="option option--check"><input type="checkbox" name="appFeatures" value="challenges"><span class="option__mark"></span><span class="option__text">تحديات وأهداف مع مجموعة</span></label>
+            <label class="option option--check"><input type="checkbox" name="appFeatures" value="educational"><span class="option__mark"></span><span class="option__text">محتوى تعليمي (فيديوهات، شرح علمي)</span></label>
+            <label class="option option--check"><input type="checkbox" name="appFeatures" value="real-stories"><span class="option__mark"></span><span class="option__text">قصص ناس عاشوا التجربة فعلاً</span></label>
+            <label class="option option--check"><input type="checkbox" name="appFeatures" value="smart-reminders"><span class="option__mark"></span><span class="option__text">تذكيرات مخصصة وقت اللي بدخّن فيه عادة</span></label>
+            <label class="option option--check"><input type="checkbox" name="appFeatures" value="health-tracking"><span class="option__mark"></span><span class="option__text">تتبع صحة جسمي (نبض، أكسجين، تنفس)</span></label>
+            <label class="option option--check"><input type="checkbox" name="appFeatures" value="career-opportunities"><span class="option__mark"></span><span class="option__text">فرص شغل أو تطوير (Freelance، كورسات)</span></label>
+            <label class="option option--check"><input type="checkbox" name="appFeatures" value="distraction"><span class="option__mark"></span><span class="option__text">مواد ترفيهية تشغلني وقت الـ craving</span></label>
+          </div>
+          <div class="options__limit-note">اختار حتى ٣ من فضلك</div>
+
+          <div class="q" data-q="appFeaturesOther" style="margin-top: 18px; margin-bottom: 0;">
+            <label class="q__label" style="font-size: 15px; font-weight: 400;">
+              ميزة تانية في بالك مش موجودة فوق؟
+              <span class="q__optional">اختياري</span>
+            </label>
+            <textarea class="textarea" name="appFeaturesOther" placeholder="اكتبها هنا." style="min-height: 70px;"></textarea>
+          </div>
+        </div>
+
+        <!-- Q19 -->
+        <div class="q" data-q="practicalTrack">
+          <label class="q__label">
+            لو فتحنا مجموعة محدودة بعد الكامب لشباب عايزين يحوّلوا اللي اتعلموه لخطوات عملية — شغل حر (Freelance)، مشروع صغير، تعلّم مهارة جديدة — تحب تكون فيها؟
+            <span class="q__optional">اختياري</span>
+          </label>
+          <div class="options">
+            <label class="option option--radio"><input type="radio" name="practicalTrack" value="committed"><span class="option__mark"></span><span class="option__text">أيوه، عايز فعلاً وجاهز التزم</span></label>
+            <label class="option option--radio"><input type="radio" name="practicalTrack" value="want-details"><span class="option__mark"></span><span class="option__text">مهتم لكن محتاج أعرف تفاصيل أكتر</span></label>
+            <label class="option option--radio"><input type="radio" name="practicalTrack" value="maybe"><span class="option__mark"></span><span class="option__text">ممكن، بس لسه مش متأكد</span></label>
+            <label class="option option--radio"><input type="radio" name="practicalTrack" value="not-interested"><span class="option__mark"></span><span class="option__text">لأ، ده مش اهتمامي دلوقتي</span></label>
+          </div>
+
+          <!-- Q20 - Conditional contact field -->
+          <div class="conditional-field" id="contactField">
+            <div class="conditional-field__inner">
+              <label class="conditional-field__label" for="contactInput">حلو. عايزين نوصلك بالتفاصيل.</label>
+              <p class="conditional-field__hint">
+                اكتب رقم موبايلك أو إيميلك. <strong style="color: var(--teal);">وعد منا:</strong> مش هنشاركه مع حد، ومش هنبعتلك إلا لما المسار العملي ده يبقى جاهز.
+              </p>
+              <input type="text" class="text-input" name="contact" id="contactInput" placeholder="01xxxxxxxxx أو email@example.com" autocomplete="off">
+            </div>
+          </div>
+        </div>
+
+        <div class="privacy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          بيانات التواصل بتُحفظ في مكان منفصل تماماً عن باقي إجاباتك. إجاباتك تفضل مجهولة الهوية.
+        </div>
       <!-- Submit -->
       <div class="submit-area">
         <p class="submit-area__note">شكراً إنك وصلت لهنا. اللي كتبته هيوصل، وهيغيّر حاجة فعلاً.</p>
@@ -1168,9 +1383,9 @@
       <p class="thank-you__mark">بصمتك اتسجلت</p>
       <h1 class="thank-you__title">صوتك وصل.</h1>
       <p class="thank-you__msg">
-        إحنا هنقرا اللي كتبته بمنتهي الجدية والتركيز الشديد.<br>
-        وشكراً من القلب علي تقديرك لينا ومساهمتك الفعالة.<br>
-        ونلتقي بك دائماً علي خير يا صديقي.
+        إحنا هنقرا اللي كتبته الليلة قبل ما ننام.<br>
+        وبكره الصبح هتسمع ٣ حاجات قلتوها انتم.<br>
+        دلوقتي يلا، السمر مستنيك.
       </p>
       <div class="thank-you__divider"></div>
       <p class="thank-you__close">— فريق الكامب</p>
@@ -1202,6 +1417,7 @@
     };
 
     const COLLECTION_NAME = 'responses_camp_round_1';
+    const CONTACTS_COLLECTION = 'contact_leads_camp_round_1';
 
     // ──────────────────────────────────────────────────
     // FIREBASE INITIALIZATION (with localStorage fallback)
@@ -1322,6 +1538,25 @@
     updateRating();
 
     // ──────────────────────────────────────────────────
+    // CONDITIONAL CONTACT FIELD (Q20 — appears based on Q19)
+    // ──────────────────────────────────────────────────
+    const practicalTrackRadios = document.querySelectorAll('input[name="practicalTrack"]');
+    const contactField = document.getElementById('contactField');
+    const contactInput = document.getElementById('contactInput');
+    const SHOW_CONTACT_FOR = ['committed', 'want-details'];
+
+    practicalTrackRadios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (SHOW_CONTACT_FOR.includes(radio.value)) {
+          contactField.classList.add('is-visible');
+        } else {
+          contactField.classList.remove('is-visible');
+          contactInput.value = '';
+        }
+      });
+    });
+
+    // ──────────────────────────────────────────────────
     // MULTI-SELECT MAX LIMIT (challenges, topics)
     // ──────────────────────────────────────────────────
     document.querySelectorAll('[data-max]').forEach(q => {
@@ -1415,7 +1650,16 @@
     }
 
     function collectAnswers() {
+      // Section 6 is fully optional - check if anything was filled
+      const knownServices = form.elements['knownServices'].value.trim();
+      const appWhatWouldRecommend = form.elements['appWhatWouldRecommend'].value.trim();
+      const appFeatures = getCheckboxValues('appFeatures');
+      const appFeaturesOther = form.elements['appFeaturesOther'].value.trim();
+      const practicalTrack = form.elements['practicalTrack'].value || null;
+      const section6HasContent = !!(knownServices || appWhatWouldRecommend || appFeatures.length || appFeaturesOther || practicalTrack);
+
       return {
+        // Section 1-5
         age: form.elements['age'].value || null,
         status: form.elements['status'].value || null,
         governorate: form.elements['governorate'].value || null,
@@ -1430,7 +1674,29 @@
         topics: getCheckboxValues('topics'),
         ifMinistry: form.elements['ifMinistry'].value.trim(),
         continue: form.elements['continue'].value || null,
-        final: form.elements['final'].value.trim()
+        final: form.elements['final'].value.trim(),
+
+        // Section 6 (optional)
+        section6Filled: section6HasContent,
+        knownServices: knownServices,
+        appWhatWouldRecommend: appWhatWouldRecommend,
+        appFeatures: appFeatures,
+        appFeaturesOther: appFeaturesOther,
+        practicalTrack: practicalTrack
+      };
+    }
+
+    function getContactLead() {
+      const practicalTrack = form.elements['practicalTrack'].value || null;
+      const contact = form.elements['contact'] ? form.elements['contact'].value.trim() : '';
+      if (!contact || !SHOW_CONTACT_FOR.includes(practicalTrack)) return null;
+      return {
+        sessionId: SESSION.id,
+        contact: contact,
+        practicalTrack: practicalTrack,
+        governorate: form.elements['governorate'].value || null,
+        age: form.elements['age'].value || null,
+        clientTimestamp: new Date().toISOString()
       };
     }
 
@@ -1447,14 +1713,24 @@
       };
     }
 
-    async function saveToFirebase(payload) {
+    async function saveToFirebase(payload, contactLead) {
       if (!firebaseReady) return false;
       try {
+        // Save main response (anonymous)
         const docRef = await addDoc(collection(db, COLLECTION_NAME), {
           ...payload,
           serverTimestamp: serverTimestamp()
         });
-        console.log('✓ Saved to Firebase:', docRef.id);
+        console.log('✓ Saved response to Firebase:', docRef.id);
+
+        // Save contact lead in SEPARATE collection (if provided)
+        if (contactLead) {
+          const leadRef = await addDoc(collection(db, CONTACTS_COLLECTION), {
+            ...contactLead,
+            serverTimestamp: serverTimestamp()
+          });
+          console.log('✓ Saved contact lead to separate collection:', leadRef.id);
+        }
         return true;
       } catch (err) {
         console.error('Firebase save failed:', err);
@@ -1494,12 +1770,13 @@
       submitBtn.disabled = true;
 
       const payload = buildPayload();
+      const contactLead = getContactLead();
 
       // Always save to localStorage as backup
       saveToLocalStorage(payload);
 
       // Try Firebase
-      const firebaseSaved = await saveToFirebase(payload);
+      const firebaseSaved = await saveToFirebase(payload, contactLead);
 
       // Show thank you regardless (data is in localStorage at minimum)
       setTimeout(() => {
