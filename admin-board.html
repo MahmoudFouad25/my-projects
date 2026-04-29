@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بصمتك — لوحة التحكم</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --paper: #F4EFE3;
+      --paper-soft: #FBF7EC;
+      --paper-deep: #EBE3D0;
+      --card: #FFFFFF;
+      --ink: #1F1A14;
+      --ink-soft: #4A3F30;
+      --ink-faint: #8B7E68;
+      --line: #D9CFB8;
+      --line-soft: #E8DDC8;
+      --teal: #0F3D3E;
+      --teal-light: #1F5556;
+      --teal-soft: rgba(15, 61, 62, 0.08);
+      --terra: #B8451F;
+      --terra-light: #D45B30;
+      --terra-soft: rgba(184, 69, 31, 0.08);
+      --gold: #C9994A;
+      --gold-light: #E0B66A;
+      --green: #2F7D4F;
+      --shadow-sm: 0 1px 3px rgba(31, 26, 20, 0.06);
+      --shadow-md: 0 4px 16px rgba(31, 26, 20, 0.08);
+    }
+
+    body {
+      font-family: 'Tajawal', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* ─── Topbar ─── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .topbar__brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .topbar__logo {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--teal);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--paper-soft);
+      font-family: 'El Messiri', serif;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .topbar__title {
+      font-family: 'El Messiri', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--teal);
+    }
+    .topbar__sub {
+      font-size: 11px;
+      color: var(--ink-faint);
+      letter-spacing: 0.18em;
+    }
+    .topbar__actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .status-pill {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 14px;
+      background: var(--paper-soft);
+      border: 1px solid var(--line);
+      border-radius: 100px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      font-weight: 500;
+    }
+    .status-pill__dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    .status-pill__dot.is-error { background: var(--terra); }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ─── Buttons ─── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 16px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--paper-soft);
+      color: var(--ink-soft);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .btn:hover {
+      background: #fff;
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+    .btn--primary {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: var(--paper-soft);
+    }
+    .btn--primary:hover {
+      background: var(--teal-light);
+      color: #fff;
+    }
+    .btn--terra {
+      background: var(--terra);
+      border-color: var(--terra);
+      color: var(--paper-soft);
+    }
+    .btn--terra:hover {
+      background: var(--terra-light);
+      color: #fff;
+    }
+    .btn--ghost {
+      background: transparent;
+      border-color: transparent;
+    }
+    .btn--small {
+      padding: 5px 10px;
+      font-size: 12px;
+    }
+    .btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ─── Layout ─── */
+    main {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 24px 28px 80px;
+    }
+
+    /* ─── Tabs ─── */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 28px;
+      padding: 4px;
+      background: var(--paper-soft);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow-x: auto;
+    }
+    .tab {
+      padding: 10px 18px;
+      font-family: 'El Messiri', serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink-faint);
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .tab:hover { color: var(--ink); background: rgba(255,255,255,0.5); }
+    .tab.is-active {
+      background: var(--card);
+      color: var(--teal);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-content {
+      display: none;
+    }
+    .tab-content.is-active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Stats cards (overview) ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--line-soft);
+      border-radius: 14px;
+      padding: 20px 22px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--teal);
+    }
+    .stat-card--terra::before { background: var(--terra); }
+    .stat-card--gold::before { background: var(--gold); }
+    .stat-card--green::before { background: var(--green); }
+    .stat-card__label {
+      font-size: 12px;
+      color: var(--ink-faint);
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .stat-card__value {
+      font-family: 'El Messiri', serif;
+      font-size: 38px;
+      font-weight: 700;
+      color: var(--teal);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-card--terra .stat-card__value { color: var(--terra); }
+    .stat-card--gold .stat-card__value { color: var(--gold); }
+    .stat-card--green .stat-card__value { color: var(--green); }
+    .stat-card__sub {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+    }
+
+    /* ─── Section ─── */
+    .section {
+      background: var(--card);
+      border: 1px solid var(--line-soft);
+      border-radius: 14px;
+      padding: 24px 26px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .section__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .section__title {
+      font-family: 'El Messiri', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--teal);
+    }
+    .section__hint {
+      font-size: 12.5px;
+      color: var(--ink-faint);
+    }
+
+    /* ─── Two columns ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Bar lists ─── */
+    .bars {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .bar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 14px;
+    }
+    .bar__main {
+      min-width: 0;
+    }
+    .bar__label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 6px;
+      gap: 12px;
+    }
+    .bar__name {
+      font-size: 14px;
+      color: var(--ink);
+      font-weight: 500;
+    }
+    .bar__pct {
+      font-family: 'El Messiri', serif;
+      font-size: 13px;
+      color: var(--ink-faint);
+    }
+    .bar__track {
+      height: 8px;
+      background: var(--paper-deep);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .bar__fill {
+      height: 100%;
+      background: var(--teal);
+      border-radius: 100px;
+      transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .bar__fill--terra { background: var(--terra); }
+    .bar__fill--gold { background: var(--gold); }
+    .bar__count {
+      font-family: 'El Messiri', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--teal);
+      min-width: 36px;
+      text-align: left;
+    }
+
+    /* ─── Rating histogram ─── */
+    .histogram {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 6px;
+      align-items: end;
+      height: 160px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .histogram__col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: end;
+      gap: 4px;
+      height: 100%;
+    }
+    .histogram__bar {
+      width: 100%;
+      background: var(--teal);
+      border-radius: 4px 4px 0 0;
+      min-height: 4px;
+      transition: height 0.6s ease;
+      position: relative;
+    }
+    .histogram__bar::after {
+      content: attr(data-count);
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'El Messiri', serif;
+      font-size: 12px;
+      color: var(--ink-faint);
+    }
+    .histogram__col[data-rating="9"] .histogram__bar,
+    .histogram__col[data-rating="10"] .histogram__bar {
+      background: var(--terra);
+    }
+    .histogram__col[data-rating="1"] .histogram__bar,
+    .histogram__col[data-rating="2"] .histogram__bar,
+    .histogram__col[data-rating="3"] .histogram__bar {
+      background: var(--gold);
+    }
+    .histogram__labels {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .histogram__lbl {
+      text-align: center;
+      font-family: 'El Messiri', serif;
+      font-size: 12px;
+      color: var(--ink-faint);
+    }
+
+    /* ─── Response browser ─── */
+    .response-toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-bottom: 16px;
+      padding: 14px;
+      background: var(--paper-soft);
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+    }
+    .response-toolbar select,
+    .response-toolbar input {
+      padding: 7px 12px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 13px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #fff;
+      color: var(--ink);
+    }
+    .response-toolbar input { min-width: 180px; }
+
+    .response-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 600px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    .response-list::-webkit-scrollbar { width: 8px; }
+    .response-list::-webkit-scrollbar-track { background: var(--paper-soft); }
+    .response-list::-webkit-scrollbar-thumb { background: var(--line); border-radius: 100px; }
+
+    .response-card {
+      background: var(--paper-soft);
+      border: 1px solid var(--line-soft);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+    .response-card__meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--line);
+    }
+    .meta-tag {
+      font-size: 11px;
+      padding: 3px 9px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 100px;
+      color: var(--ink-soft);
+      font-weight: 500;
+    }
+    .meta-tag--rating { color: var(--terra); border-color: var(--terra); }
+    .meta-tag--smoker { background: rgba(184, 69, 31, 0.06); }
+    .response-card__text {
+      font-size: 14.5px;
+      color: var(--ink);
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .response-card__text--empty {
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+
+    /* ─── Data export box ─── */
+    .export-box {
+      background: var(--paper-soft);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .export-box__title {
+      font-family: 'El Messiri', serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--teal);
+      margin-bottom: 8px;
+    }
+    .export-box__desc {
+      font-size: 13.5px;
+      color: var(--ink-soft);
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+    .export-box__actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .export-output {
+      margin-top: 16px;
+      padding: 14px;
+      background: var(--ink);
+      color: #DDD;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      max-height: 400px;
+      overflow: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      direction: ltr;
+      text-align: left;
+      display: none;
+    }
+    .export-output.is-visible { display: block; }
+    .export-output::-webkit-scrollbar { width: 8px; height: 8px; }
+    .export-output::-webkit-scrollbar-track { background: #2a2520; }
+    .export-output::-webkit-scrollbar-thumb { background: #555; border-radius: 100px; }
+
+    /* ─── Analysis section ─── */
+    .analysis-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .analysis-block {
+      background: var(--card);
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .analysis-block__head {
+      padding: 14px 18px;
+      background: linear-gradient(to left, var(--teal-soft), transparent);
+      border-bottom: 1px solid var(--line-soft);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .analysis-block__title {
+      font-family: 'El Messiri', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--teal);
+    }
+    .analysis-block__icon {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: var(--teal);
+      color: var(--paper-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'El Messiri', serif;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .analysis-block__body {
+      padding: 16px 20px;
+    }
+    .analysis-block__editor {
+      display: none;
+    }
+    .analysis-block.is-editing .analysis-block__editor { display: block; }
+    .analysis-block.is-editing .analysis-block__display { display: none; }
+
+    .analysis-block__display {
+      font-size: 14.5px;
+      color: var(--ink);
+      line-height: 1.85;
+    }
+    .analysis-block__display:empty::before {
+      content: 'مفيش تحليل محفوظ. اضغط "تعديل" والصق هنا.';
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+    .analysis-block__display h1,
+    .analysis-block__display h2,
+    .analysis-block__display h3 {
+      font-family: 'El Messiri', serif;
+      color: var(--teal);
+      margin: 14px 0 8px;
+      font-weight: 600;
+    }
+    .analysis-block__display h1 { font-size: 22px; }
+    .analysis-block__display h2 { font-size: 19px; }
+    .analysis-block__display h3 { font-size: 17px; }
+    .analysis-block__display p { margin-bottom: 10px; }
+    .analysis-block__display ul,
+    .analysis-block__display ol { margin: 10px 22px; }
+    .analysis-block__display li { margin-bottom: 6px; }
+    .analysis-block__display strong { color: var(--terra); font-weight: 600; }
+    .analysis-block__display blockquote {
+      border-right: 3px solid var(--terra);
+      padding: 8px 14px;
+      background: var(--terra-soft);
+      border-radius: 6px;
+      margin: 10px 0;
+      font-style: italic;
+    }
+    .analysis-block__display code {
+      background: var(--paper-deep);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    .analysis-textarea {
+      width: 100%;
+      min-height: 280px;
+      padding: 14px;
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-soft);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--ink);
+      resize: vertical;
+    }
+    .analysis-textarea:focus {
+      outline: none;
+      border-color: var(--teal);
+      background: #fff;
+    }
+    .analysis-block__actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      justify-content: flex-end;
+    }
+    .analysis-block__updated {
+      font-size: 11.5px;
+      color: var(--ink-faint);
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    /* ─── Toast ─── */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      z-index: 100;
+      background: var(--ink);
+      color: var(--paper-soft);
+      padding: 12px 22px;
+      border-radius: 100px;
+      font-size: 13.5px;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .toast.is-visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+    .toast.is-error { background: var(--terra); }
+    .toast.is-success { background: var(--green); }
+
+    /* Loading overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      transition: opacity 0.4s ease;
+    }
+    .loading-overlay.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--line);
+      border-top-color: var(--terra);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-overlay__text {
+      font-family: 'El Messiri', serif;
+      font-size: 16px;
+      color: var(--ink-soft);
+    }
+
+    /* Empty state in tabs */
+    .empty-tab {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--ink-faint);
+    }
+    .empty-tab__title {
+      font-family: 'El Messiri', serif;
+      font-size: 22px;
+      color: var(--ink-soft);
+      margin-bottom: 8px;
+    }
+
+    /* Number formatting */
+    .num-ar {
+      font-family: 'El Messiri', serif;
+      font-feature-settings: 'lnum';
+    }
+
+    @media (max-width: 768px) {
+      main { padding: 16px 14px 60px; }
+      .topbar { padding: 12px 14px; }
+      .section { padding: 18px 16px; }
+      .stat-card__value { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+    <div class="loading-overlay__text">جاري تحميل البيانات...</div>
+  </div>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar__brand">
+      <div class="topbar__logo">ه</div>
+      <div>
+        <div class="topbar__title">بصمتك — لوحة التحكم</div>
+        <div class="topbar__sub">معسكر هختار صحتي ٢٠٢٦</div>
+      </div>
+    </div>
+    <div class="topbar__actions">
+      <div class="status-pill" id="statusPill">
+        <span class="status-pill__dot"></span>
+        <span id="statusText">متصل</span>
+      </div>
+      <button class="btn" id="refreshBtn">
+        <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        تحديث
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Tabs -->
+    <div class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="overview">نظرة عامة</button>
+      <button class="tab" data-tab="demographics">الديموغرافيا</button>
+      <button class="tab" data-tab="engagement">التفاعل والتقييم</button>
+      <button class="tab" data-tab="needs">الاحتياجات</button>
+      <button class="tab" data-tab="section6">القسم الاختياري</button>
+      <button class="tab" data-tab="responses">الإجابات المفتوحة</button>
+      <button class="tab" data-tab="export">تجهيز للتحليل</button>
+      <button class="tab" data-tab="analysis">تحليل كلود</button>
+    </div>
+
+    <!-- ════ OVERVIEW ════ -->
+    <div class="tab-content is-active" data-tab-content="overview">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card__label">إجمالي الأصوات</div>
+          <div class="stat-card__value" id="statTotal">٠</div>
+          <div class="stat-card__sub" id="statTotalSub">من ١٥٠ مشارك متوقع</div>
+        </div>
+        <div class="stat-card stat-card--terra">
+          <div class="stat-card__label">متوسط التقييم</div>
+          <div class="stat-card__value" id="statRating">—</div>
+          <div class="stat-card__sub" id="statRatingSub">من ١٠</div>
+        </div>
+        <div class="stat-card stat-card--gold">
+          <div class="stat-card__label">تقييمات ٩+ (ممتازة)</div>
+          <div class="stat-card__value" id="statHigh">٠٪</div>
+          <div class="stat-card__sub" id="statHighSub">— صوت</div>
+        </div>
+        <div class="stat-card stat-card--green">
+          <div class="stat-card__label">رغبة الاستمرار</div>
+          <div class="stat-card__value" id="statContinue">٠٪</div>
+          <div class="stat-card__sub" id="statContinueSub">سفير أو متطوع أو مشارك</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">مدخنين حالياً</div>
+          <div class="stat-card__value" id="statSmokers">٠٪</div>
+          <div class="stat-card__sub" id="statSmokersSub">— صوت</div>
+        </div>
+        <div class="stat-card stat-card--terra">
+          <div class="stat-card__label">القسم الاختياري</div>
+          <div class="stat-card__value" id="statSection6">٠٪</div>
+          <div class="stat-card__sub" id="statSection6Sub">— ملوا الأسئلة الإضافية</div>
+        </div>
+        <div class="stat-card stat-card--gold">
+          <div class="stat-card__label">مهتمين بالمسار العملي</div>
+          <div class="stat-card__value" id="statTrack">٠</div>
+          <div class="stat-card__sub" id="statTrackSub">جاهزين أو محتاجين تفاصيل</div>
+        </div>
+        <div class="stat-card stat-card--green">
+          <div class="stat-card__label">جهات اتصال متاحة</div>
+          <div class="stat-card__value" id="statContacts">٠</div>
+          <div class="stat-card__sub">في مجموعة منفصلة</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section__head">
+          <h2 class="section__title">توزيع التقييم</h2>
+          <span class="section__hint">عدد المقيّمين عند كل درجة</span>
+        </div>
+        <div class="histogram" id="histogramBars"></div>
+        <div class="histogram__labels" id="histogramLabels"></div>
+      </div>
+
+      <div class="two-col">
+        <div class="section">
+          <div class="section__head">
+            <h2 class="section__title">رغبة الاستمرار</h2>
+          </div>
+          <div class="bars" id="continueBars"></div>
+        </div>
+        <div class="section">
+          <div class="section__head">
+            <h2 class="section__title">دوافع الحضور (الأعلى)</h2>
+          </div>
+          <div class="bars" id="motivationBarsOverview"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ DEMOGRAPHICS ════ -->
+    <div class="tab-content" data-tab-content="demographics">
+      <div class="two-col">
+        <div class="section">
+          <div class="section__head"><h2 class="section__title">الفئة العمرية</h2></div>
+          <div class="bars" id="ageBars"></div>
+        </div>
+        <div class="section">
+          <div class="section__head"><h2 class="section__title">الوضع الحالي</h2></div>
+          <div class="bars" id="statusBars"></div>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="section">
+          <div class="section__head"><h2 class="section__title">المحافظات</h2></div>
+          <div class="bars" id="govBars"></div>
+        </div>
+        <div class="section">
+          <div class="section__head"><h2 class="section__title">العلاقة بالتدخين</h2></div>
+          <div class="bars" id="smokingBars"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ ENGAGEMENT ════ -->
+    <div class="tab-content" data-tab-content="engagement">
+      <div class="section">
+        <div class="section__head">
+          <h2 class="section__title">دوافع الحضور (Q5)</h2>
+          <span class="section__hint">يمكن الاختيار المتعدد</span>
+        </div>
+        <div class="bars" id="motivationBars"></div>
+      </div>
+      <div class="section">
+        <div class="section__head"><h2 class="section__title">رغبة الاستمرار بعد الكامب (Q14)</h2></div>
+        <div class="bars" id="continueBarsDetail"></div>
+      </div>
+    </div>
+
+    <!-- ════ NEEDS ════ -->
+    <div class="tab-content" data-tab-content="needs">
+      <div class="section">
+        <div class="section__head">
+          <h2 class="section__title">أكبر التحديات (Q11)</h2>
+          <span class="section__hint">يمكن الاختيار المتعدد - حتى ٣</span>
+        </div>
+        <div class="bars" id="challengeBars"></div>
+      </div>
+      <div class="section">
+        <div class="section__head">
+          <h2 class="section__title">المواضيع المطلوبة في الكامب الجاي (Q12)</h2>
+          <span class="section__hint">يمكن الاختيار المتعدد - حتى ٣</span>
+        </div>
+        <div class="bars" id="topicBars"></div>
+      </div>
+    </div>
+
+    <!-- ════ SECTION 6 ════ -->
+    <div class="tab-content" data-tab-content="section6">
+      <div class="stats-grid">
+        <div class="stat-card stat-card--terra">
+          <div class="stat-card__label">نسبة الإكمال</div>
+          <div class="stat-card__value" id="s6FillRate">٠٪</div>
+          <div class="stat-card__sub" id="s6FillRateSub">— من — أكملوا القسم</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__label">المسار العملي - جاهزين</div>
+          <div class="stat-card__value" id="s6Committed">٠</div>
+          <div class="stat-card__sub">"عايز فعلاً وجاهز"</div>
+        </div>
+        <div class="stat-card stat-card--gold">
+          <div class="stat-card__label">المسار العملي - محتاجين تفاصيل</div>
+          <div class="stat-card__value" id="s6WantDetails">٠</div>
+          <div class="stat-card__sub">"مهتم لكن محتاج تفاصيل"</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section__head"><h2 class="section__title">أهم ميزات التطبيق المقترح (Q18)</h2></div>
+        <div class="bars" id="appFeaturesBars"></div>
+      </div>
+
+      <div class="section">
+        <div class="section__head"><h2 class="section__title">رد فعل المسار العملي (Q19)</h2></div>
+        <div class="bars" id="practicalTrackBars"></div>
+      </div>
+    </div>
+
+    <!-- ════ RESPONSES BROWSER ════ -->
+    <div class="tab-content" data-tab-content="responses">
+      <div class="section">
+        <div class="section__head">
+          <h2 class="section__title">تصفّح الإجابات المفتوحة</h2>
+          <span class="section__hint" id="respCount">— إجابة</span>
+        </div>
+
+        <div class="response-toolbar">
+          <select id="respField">
+            <option value="touched">أكتر فقرة لمستك (Q7)</option>
+            <option value="changed">حاجة غيرت تفكيرك (Q8)</option>
+            <option value="missing">حاجة ناقصة (Q10)</option>
+            <option value="expectations">كنت متوقع (Q6)</option>
+            <option value="ifMinistry">لو كنت مكان الوزارة (Q13)</option>
+            <option value="final">حاجة أخيرة (Q15)</option>
+            <option value="knownServices">خدمات تعرفها (Q16)</option>
+            <option value="appWhatWouldRecommend">إيه يخليك ترشّح التطبيق (Q17)</option>
+            <option value="appFeaturesOther">ميزة تانية للتطبيق (Q18)</option>
+          </select>
+
+          <select id="respFilterAge">
+            <option value="">كل الأعمار</option>
+            <option value="17-19">١٧-١٩</option>
+            <option value="20-23">٢٠-٢٣</option>
+            <option value="24-29">٢٤-٢٩</option>
+            <option value="30-39">٣٠-٣٩</option>
+            <option value="40+">٤٠+</option>
+          </select>
+
+          <select id="respFilterSmoking">
+            <option value="">كل الفئات</option>
+            <option value="current-smoker">مدخنين حالياً</option>
+            <option value="ex-smoker">سابقاً</option>
+            <option value="tried">جربوا ومكملوش</option>
+            <option value="never">ما جربوش خالص</option>
+            <option value="shisha-only">شيشة فقط</option>
+            <option value="vape">إلكتروني</option>
+          </select>
+
+          <select id="respFilterRating">
+            <option value="">كل التقييمات</option>
+            <option value="high">عالية (٩-١٠)</option>
+            <option value="medium">متوسطة (٥-٨)</option>
+            <option value="low">منخفضة (١-٤)</option>
+          </select>
+
+          <input type="text" id="respSearch" placeholder="بحث في النصوص...">
+
+          <button class="btn btn--small" id="respCopy">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            نسخ المعروض
+          </button>
+        </div>
+
+        <div class="response-list" id="responseList"></div>
+      </div>
+    </div>
+
+    <!-- ════ EXPORT FOR CLAUDE ════ -->
+    <div class="tab-content" data-tab-content="export">
+
+      <div class="section">
+        <div class="section__head">
+          <h2 class="section__title">تجهيز البيانات لإرسالها لكلود</h2>
+          <span class="section__hint">انسخ ولصق في محادثة كلود</span>
+        </div>
+        <p style="color: var(--ink-soft); font-size: 14px; margin-bottom: 18px; line-height: 1.8;">
+          الأزرار دي بتجهز البيانات بصيغة Markdown نظيفة. اختار اللي محتاجه، اضغط نسخ، والصق في محادثة كلود علشان يحلل ويرجعلك التحليل تحطه في تبويبة "تحليل كلود".
+        </p>
+
+        <div class="two-col">
+          <div class="export-box">
+            <div class="export-box__title">حزمة شاملة</div>
+            <div class="export-box__desc">إحصائيات + توزيعات + كل الإجابات المفتوحة. الأنسب لتحليل عميق وكامل من كلود.</div>
+            <div class="export-box__actions">
+              <button class="btn btn--primary" data-export="full">
+                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                نسخ الحزمة الشاملة
+              </button>
+              <button class="btn" data-export="full" data-show="1">معاينة</button>
+            </div>
+          </div>
+
+          <div class="export-box">
+            <div class="export-box__title">إحصائيات وأرقام فقط</div>
+            <div class="export-box__desc">ملخص رقمي بدون النصوص المفتوحة. مفيد لتحليل الديموغرافيا والاتجاهات.</div>
+            <div class="export-box__actions">
+              <button class="btn btn--primary" data-export="stats">
+                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                نسخ الإحصائيات
+              </button>
+              <button class="btn" data-export="stats" data-show="1">معاينة</button>
+            </div>
+          </div>
+
+          <div class="export-box">
+            <div class="export-box__title">الإجابات المفتوحة فقط</div>
+            <div class="export-box__desc">كل النصوص اللي الشباب كتبوها (بدون أسئلة الاختيار). الأنسب لاستخراج الاقتباسات والمواضيع المتكررة.</div>
+            <div class="export-box__actions">
+              <button class="btn btn--primary" data-export="open">
+                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                نسخ الإجابات المفتوحة
+              </button>
+              <button class="btn" data-export="open" data-show="1">معاينة</button>
+            </div>
+          </div>
+
+          <div class="export-box">
+            <div class="export-box__title">JSON خام</div>
+            <div class="export-box__desc">كل البيانات الخام بصيغة JSON. للتحليل البرمجي أو التصدير لأدوات تانية.</div>
+            <div class="export-box__actions">
+              <button class="btn btn--primary" data-export="json">
+                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                نسخ JSON
+              </button>
+              <button class="btn" data-export="json" data-show="1">معاينة</button>
+              <button class="btn" id="downloadJson">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                تنزيل ملف
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <pre class="export-output" id="exportOutput"></pre>
+      </div>
+
+      <!-- Suggested prompt -->
+      <div class="section">
+        <div class="section__head">
+          <h2 class="section__title">برومبت مقترح لكلود</h2>
+          <span class="section__hint">انسخ ده في أول محادثتك</span>
+        </div>
+        <div class="export-box">
+          <pre id="suggestedPrompt" style="white-space: pre-wrap; font-family: 'Tajawal', sans-serif; font-size: 14px; line-height: 1.8; color: var(--ink-soft); direction: rtl;">يا كلود، أنا محمود من فريق معسكر "هختار صحتي". قعدنا اليوم الثلاثاء وزّعنا استمارة "بصمتك" على المشاركين، والإجابات هي اللي ورا ده. عاوزك تحلّلها بعمق كأنك فريق متخصصين، وتطلعلي:
+
+1. **ملخص تنفيذي** (٣-٤ فقرات): إيه أهم خلاصات اليوم؟ إيه الـ insights الكبيرة؟
+2. **أهم ٥-٧ موضوعات/أنماط** ظهرت من الإجابات المفتوحة: مع اقتباسات حقيقية مدعمة
+3. **أكتر فقرات/لحظات أثّرت**: استخرجها من سؤال "أكتر فقرة لمستك" بكلام الشباب نفسه
+4. **انتقادات وفجوات**: كل اللي قالوه عن "حاجة ناقصة" - مرتبة حسب التكرار
+5. **توصيات عملية للكامبات الجاية**: مبنية على الموضوعات اللي طلبوها والتحديات اللي ذكروها
+6. **تحليل ديموغرافي مهم**: في فروقات بين الأعمار أو بين المدخنين/غير المدخنين؟
+7. **اقتباسات ذهبية للتقرير الرسمي**: ٥-١٠ اقتباسات قصيرة قوية ممكن تتحط في تقرير الوزارة
+
+بعد كده هلصق التحليل في صفحة الأدمن بتاعتي، فاكتبه بـ Markdown منظم وواضح. خليه عميق وذكي، وما تخفّش تنتقد لو في حاجة محتاجة انتقاد.</pre>
+          <div class="export-box__actions" style="margin-top: 14px;">
+            <button class="btn btn--primary" id="copyPrompt">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              نسخ البرومبت
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ ANALYSIS STORAGE ════ -->
+    <div class="tab-content" data-tab-content="analysis">
+      <div class="section">
+        <div class="section__head">
+          <h2 class="section__title">تحليلات كلود المحفوظة</h2>
+          <span class="section__hint">الصق التحليل من كلود واحفظه. بيتخزن في فايربيز ومحلياً.</span>
+        </div>
+        <p style="color: var(--ink-soft); font-size: 14px; margin-bottom: 20px; line-height: 1.8;">
+          كل بلوك تحت بيمثل قسم تحليلي. بعد ما كلود يحلّل البيانات اللي بعتلك من تبويبة "تجهيز للتحليل"، الصق كل قسم في مكانه واحفظه. بيدعم Markdown (عناوين، قوائم، اقتباسات، نصوص بارزة).
+        </p>
+        <div class="analysis-grid" id="analysisGrid"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, onSnapshot, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+      authDomain: "life-makers-diagnostic.firebaseapp.com",
+      projectId: "life-makers-diagnostic",
+      storageBucket: "life-makers-diagnostic.appspot.com",
+      messagingSenderId: "137599837774",
+      appId: "1:137599837774:web:e5f2f6a5c547c265fc0fba"
+    };
+    const COLLECTION_NAME = 'responses_camp_round_1';
+    const CONTACTS_COLLECTION = 'contact_leads_camp_round_1';
+    const ANALYSES_COLLECTION = 'analyses_camp_round_1';
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ─── State ───
+    let responses = [];
+    let contactLeadsCount = 0;
+
+    // ─── Arabic numerals ───
+    const arDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    const toAr = n => String(n).replace(/\d/g, d => arDigits[parseInt(d)]);
+    const toArDecimal = n => n.toFixed(1).replace(/\d/g, d => arDigits[parseInt(d)]).replace('.', '٫');
+
+    // ─── Label maps ───
+    const AGE_LABELS = { '17-19': '١٧ - ١٩ سنة', '20-23': '٢٠ - ٢٣ سنة', '24-29': '٢٤ - ٢٩ سنة', '30-39': '٣٠ - ٣٩ سنة', '40+': '٤٠ سنة وأكتر' };
+    const STATUS_LABELS = { 'thanawi': 'طالب ثانوي', 'university': 'طالب جامعي', 'grad-unemployed': 'خريج لسه مش شغال', 'employed': 'شغّال', 'not-working': 'مش شغال ومش بادرس', 'business-owner': 'صاحب شغل خاص' };
+    const GOV_LABELS = { 'cairo': 'القاهرة', 'giza': 'الجيزة', 'alex': 'الإسكندرية', 'qalyubia': 'القليوبية', 'beheira': 'البحيرة', 'monufia': 'المنوفية', 'gharbia': 'الغربية', 'dakahlia': 'الدقهلية', 'kafr-elsheikh': 'كفر الشيخ', 'sharqia': 'الشرقية', 'damietta': 'دمياط', 'port-said': 'بورسعيد', 'ismailia': 'الإسماعيلية', 'suez': 'السويس', 'north-sinai': 'شمال سيناء', 'south-sinai': 'جنوب سيناء', 'red-sea': 'البحر الأحمر', 'new-valley': 'الوادي الجديد', 'matrouh': 'مطروح', 'fayoum': 'الفيوم', 'beni-suef': 'بني سويف', 'minya': 'المنيا', 'asyut': 'أسيوط', 'sohag': 'سوهاج', 'qena': 'قنا', 'luxor': 'الأقصر', 'aswan': 'أسوان' };
+    const SMOKING_LABELS = { 'current-smoker': 'بدخّن دلوقتي', 'ex-smoker': 'كنت بدخن وبطّلت', 'tried': 'جربت ومكملتش', 'never': 'ما جربتش خالص', 'shisha-only': 'شيشة فقط', 'vape': 'إلكتروني (فايب/IQOS)' };
+    const MOTIVATION_LABELS = { 'curiosity': 'فضول وعايز أعرف', 'referral': 'ناس قالولي عنه', 'quit': 'بدخّن وعايز أبطّل', 'self-discovery': 'عايز أعرف نفسي', 'help-others': 'عايز أساعد قريب', 'fun': 'الجو والترفيه', 'certificate': 'الشهادة', 'dont-know': 'مش عارف بصراحة' };
+    const CHALLENGE_LABELS = { 'study': 'الدراسة وضغطها', 'work': 'الشغل أو البطالة', 'money': 'الفلوس والأمان المالي', 'family': 'علاقات الأهل', 'friends': 'علاقات الأصحاب', 'romance': 'علاقات عاطفية', 'mental-health': 'الصحة النفسية', 'physical-health': 'الصحة الجسدية', 'purpose': 'مش لاقي اتجاه/هدف', 'addiction': 'إدمان', 'none': 'مفيش تحديات حقيقية' };
+    const TOPIC_LABELS = { 'mental-health': 'الصحة النفسية', 'life-skills': 'مهارات الحياة العملية', 'confidence': 'بناء الشخصية والثقة', 'career': 'الشغل والمهارات المهنية', 'finance': 'الفلوس وريادة الأعمال', 'physical': 'الصحة الجسدية والرياضة', 'social': 'الذكاء الاجتماعي', 'addictions': 'الإدمانات', 'identity': 'الهوية والقيم والدين', 'relationships': 'العلاقات والزواج', 'tech': 'التكنولوجيا والـ AI' };
+    const CONTINUE_LABELS = { 'ambassador': 'سفير في محافظتي', 'participant': 'مشارك في الكامبات الجاية', 'volunteer': 'متطوع', 'not-sure': 'مش متأكد لسه', 'enough': 'الكامب ده يكفي' };
+    const APP_FEATURE_LABELS = { 'progress-tracking': 'متابعة يومية للتقدم', 'community': 'مجتمع شباب', 'psych-support': 'دعم نفسي متخصص', 'challenges': 'تحديات جماعية', 'educational': 'محتوى تعليمي', 'real-stories': 'قصص حقيقية', 'smart-reminders': 'تذكيرات ذكية', 'health-tracking': 'تتبع الصحة', 'career-opportunities': 'فرص شغل وتطوير', 'distraction': 'مواد ترفيهية وقت الـ craving' };
+    const PRACTICAL_TRACK_LABELS = { 'committed': 'جاهز التزم', 'want-details': 'محتاج تفاصيل', 'maybe': 'لسه مش متأكد', 'not-interested': 'مش اهتمامي دلوقتي' };
+
+    // ─── Aggregations ───
+    const countBy = (arr, key) => {
+      const c = {};
+      arr.forEach(r => { const v = r[key]; if (v) c[v] = (c[v] || 0) + 1; });
+      return c;
+    };
+    const countByMulti = (arr, key) => {
+      const c = {};
+      arr.forEach(r => { const v = r[key]; if (Array.isArray(v)) v.forEach(x => c[x] = (c[x] || 0) + 1); });
+      return c;
+    };
+    const sortDesc = obj => Object.entries(obj).sort((a, b) => b[1] - a[1]);
+    const avg = (arr, key) => {
+      const v = arr.map(r => r[key]).filter(x => typeof x === 'number');
+      return v.length ? v.reduce((a, b) => a + b, 0) / v.length : 0;
+    };
+
+    // ─── Bar list renderer ───
+    function renderBars(containerId, counts, labels, total, fillClass = '') {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      const sorted = sortDesc(counts);
+      if (!sorted.length) {
+        container.innerHTML = '<div style="color: var(--ink-faint); padding: 20px; text-align: center; font-size: 13.5px;">مفيش بيانات لسه</div>';
+        return;
+      }
+      container.innerHTML = sorted.map(([key, count]) => {
+        const pct = total ? Math.round((count / total) * 100) : 0;
+        return `
+          <div class="bar">
+            <div class="bar__main">
+              <div class="bar__label">
+                <span class="bar__name">${labels[key] || key}</span>
+                <span class="bar__pct">${toAr(pct)}٪</span>
+              </div>
+              <div class="bar__track"><div class="bar__fill ${fillClass}" style="width:${pct}%"></div></div>
+            </div>
+            <span class="bar__count">${toAr(count)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ─── Render Overview ───
+    function renderOverview() {
+      const total = responses.length;
+      const avgRating = avg(responses, 'rating');
+      const ratingCounts = countBy(responses.map(r => ({rating: r.rating})), 'rating');
+
+      const high = responses.filter(r => r.rating >= 9).length;
+      const highPct = total ? Math.round((high / total) * 100) : 0;
+
+      const continueValues = ['ambassador', 'participant', 'volunteer'];
+      const wantContinue = responses.filter(r => continueValues.includes(r.continue)).length;
+      const continuePct = total ? Math.round((wantContinue / total) * 100) : 0;
+
+      const smokers = responses.filter(r => r.smoking === 'current-smoker').length;
+      const smokerPct = total ? Math.round((smokers / total) * 100) : 0;
+
+      const s6Filled = responses.filter(r => r.section6Filled).length;
+      const s6Pct = total ? Math.round((s6Filled / total) * 100) : 0;
+
+      const trackInterested = responses.filter(r => r.practicalTrack === 'committed' || r.practicalTrack === 'want-details').length;
+
+      // Stat cards
+      document.getElementById('statTotal').textContent = toAr(total);
+      document.getElementById('statRating').textContent = total ? toArDecimal(avgRating) : '—';
+      document.getElementById('statHigh').textContent = toAr(highPct) + '٪';
+      document.getElementById('statHighSub').textContent = toAr(high) + ' صوت';
+      document.getElementById('statContinue').textContent = toAr(continuePct) + '٪';
+      document.getElementById('statContinueSub').textContent = toAr(wantContinue) + ' من أصل ' + toAr(total);
+      document.getElementById('statSmokers').textContent = toAr(smokerPct) + '٪';
+      document.getElementById('statSmokersSub').textContent = toAr(smokers) + ' صوت';
+      document.getElementById('statSection6').textContent = toAr(s6Pct) + '٪';
+      document.getElementById('statSection6Sub').textContent = `${toAr(s6Filled)} من ${toAr(total)} ملوا الأسئلة الإضافية`;
+      document.getElementById('statTrack').textContent = toAr(trackInterested);
+      document.getElementById('statContacts').textContent = toAr(contactLeadsCount);
+
+      // Histogram
+      const histBars = document.getElementById('histogramBars');
+      const histLabels = document.getElementById('histogramLabels');
+      let histHtml = '';
+      let lblHtml = '';
+      const ratingArr = responses.map(r => r.rating).filter(r => typeof r === 'number');
+      const ratingC = {};
+      ratingArr.forEach(r => ratingC[r] = (ratingC[r] || 0) + 1);
+      const maxCount = Math.max(...Object.values(ratingC), 1);
+      for (let i = 1; i <= 10; i++) {
+        const c = ratingC[i] || 0;
+        const h = Math.max(4, (c / maxCount) * 130);
+        histHtml += `<div class="histogram__col" data-rating="${i}"><div class="histogram__bar" style="height:${h}px" data-count="${toAr(c)}"></div></div>`;
+        lblHtml += `<div class="histogram__lbl">${toAr(i)}</div>`;
+      }
+      histBars.innerHTML = histHtml;
+      histLabels.innerHTML = lblHtml;
+
+      // Continue & Motivation overview bars
+      renderBars('continueBars', countBy(responses, 'continue'), CONTINUE_LABELS, total, 'bar__fill--gold');
+      renderBars('motivationBarsOverview', countByMulti(responses, 'motivation'), MOTIVATION_LABELS, total, 'bar__fill--terra');
+    }
+
+    function renderDemographics() {
+      const total = responses.length;
+      renderBars('ageBars', countBy(responses, 'age'), AGE_LABELS, total);
+      renderBars('statusBars', countBy(responses, 'status'), STATUS_LABELS, total, 'bar__fill--terra');
+      renderBars('govBars', countBy(responses, 'governorate'), GOV_LABELS, total, 'bar__fill--gold');
+      renderBars('smokingBars', countBy(responses, 'smoking'), SMOKING_LABELS, total);
+    }
+
+    function renderEngagement() {
+      const total = responses.length;
+      renderBars('motivationBars', countByMulti(responses, 'motivation'), MOTIVATION_LABELS, total, 'bar__fill--terra');
+      renderBars('continueBarsDetail', countBy(responses, 'continue'), CONTINUE_LABELS, total, 'bar__fill--gold');
+    }
+
+    function renderNeeds() {
+      const total = responses.length;
+      renderBars('challengeBars', countByMulti(responses, 'challenges'), CHALLENGE_LABELS, total, 'bar__fill--terra');
+      renderBars('topicBars', countByMulti(responses, 'topics'), TOPIC_LABELS, total);
+    }
+
+    function renderSection6() {
+      const total = responses.length;
+      const s6Responses = responses.filter(r => r.section6Filled);
+      const s6Total = s6Responses.length;
+      const fillPct = total ? Math.round((s6Total / total) * 100) : 0;
+
+      document.getElementById('s6FillRate').textContent = toAr(fillPct) + '٪';
+      document.getElementById('s6FillRateSub').textContent = `${toAr(s6Total)} من ${toAr(total)} أكملوا القسم`;
+
+      const trackCounts = countBy(s6Responses, 'practicalTrack');
+      document.getElementById('s6Committed').textContent = toAr(trackCounts['committed'] || 0);
+      document.getElementById('s6WantDetails').textContent = toAr(trackCounts['want-details'] || 0);
+
+      renderBars('appFeaturesBars', countByMulti(s6Responses, 'appFeatures'), APP_FEATURE_LABELS, s6Total, 'bar__fill--gold');
+      renderBars('practicalTrackBars', countBy(s6Responses, 'practicalTrack'), PRACTICAL_TRACK_LABELS, s6Total, 'bar__fill--terra');
+    }
+
+    // ─── Response browser ───
+    function renderResponses() {
+      const field = document.getElementById('respField').value;
+      const ageFilter = document.getElementById('respFilterAge').value;
+      const smokingFilter = document.getElementById('respFilterSmoking').value;
+      const ratingFilter = document.getElementById('respFilterRating').value;
+      const search = document.getElementById('respSearch').value.trim().toLowerCase();
+
+      let filtered = responses.filter(r => {
+        if (ageFilter && r.age !== ageFilter) return false;
+        if (smokingFilter && r.smoking !== smokingFilter) return false;
+        if (ratingFilter === 'high' && r.rating < 9) return false;
+        if (ratingFilter === 'medium' && (r.rating < 5 || r.rating > 8)) return false;
+        if (ratingFilter === 'low' && r.rating > 4) return false;
+        const txt = (r[field] || '').toString();
+        if (search && !txt.toLowerCase().includes(search)) return false;
+        return !!txt.trim();
+      });
+
+      const list = document.getElementById('responseList');
+      document.getElementById('respCount').textContent = `${toAr(filtered.length)} إجابة من ${toAr(responses.length)}`;
+
+      if (!filtered.length) {
+        list.innerHTML = '<div style="color: var(--ink-faint); padding: 30px; text-align: center; font-size: 14px;">مفيش إجابات تطابق الفلتر ده</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(r => {
+        const txt = r[field] || '';
+        const tags = [];
+        if (r.age) tags.push(`<span class="meta-tag">${AGE_LABELS[r.age] || r.age}</span>`);
+        if (r.status) tags.push(`<span class="meta-tag">${STATUS_LABELS[r.status] || r.status}</span>`);
+        if (r.governorate) tags.push(`<span class="meta-tag">${GOV_LABELS[r.governorate] || r.governorate}</span>`);
+        if (r.smoking) tags.push(`<span class="meta-tag meta-tag--smoker">${SMOKING_LABELS[r.smoking] || r.smoking}</span>`);
+        if (typeof r.rating === 'number') tags.push(`<span class="meta-tag meta-tag--rating">تقييم: ${toAr(r.rating)}</span>`);
+
+        return `
+          <div class="response-card">
+            <div class="response-card__meta">${tags.join('')}</div>
+            <div class="response-card__text">${escapeHtml(txt) || '<span class="response-card__text--empty">— مفيش إجابة —</span>'}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // ─── Export functions ───
+    function buildStatsExport() {
+      const total = responses.length;
+      const avgRating = avg(responses, 'rating');
+      const out = [];
+      out.push(`# بيانات معسكر هختار صحتي - بصمتك (Round 1)`);
+      out.push(`*تاريخ التصدير: ${new Date().toLocaleString('ar-EG')}*\n`);
+      out.push(`## نظرة عامة`);
+      out.push(`- **إجمالي الإجابات:** ${total}`);
+      out.push(`- **متوسط التقييم:** ${avgRating.toFixed(2)} / 10`);
+      out.push(`- **تقييمات 9+ (ممتازة):** ${responses.filter(r => r.rating >= 9).length} (${total ? Math.round((responses.filter(r => r.rating >= 9).length / total) * 100) : 0}%)`);
+      out.push(`- **مدخنين حالياً:** ${responses.filter(r => r.smoking === 'current-smoker').length} (${total ? Math.round((responses.filter(r => r.smoking === 'current-smoker').length / total) * 100) : 0}%)`);
+      out.push(`- **مهتمين بالاستمرار:** ${responses.filter(r => ['ambassador','participant','volunteer'].includes(r.continue)).length}`);
+      out.push(`- **أكملوا القسم الاختياري:** ${responses.filter(r => r.section6Filled).length}\n`);
+
+      const sections = [
+        ['الفئة العمرية', countBy(responses, 'age'), AGE_LABELS],
+        ['الوضع الحالي', countBy(responses, 'status'), STATUS_LABELS],
+        ['المحافظات', countBy(responses, 'governorate'), GOV_LABELS],
+        ['العلاقة بالتدخين', countBy(responses, 'smoking'), SMOKING_LABELS],
+        ['دوافع الحضور (Q5 - متعدد)', countByMulti(responses, 'motivation'), MOTIVATION_LABELS],
+        ['أكبر التحديات (Q11 - متعدد)', countByMulti(responses, 'challenges'), CHALLENGE_LABELS],
+        ['مواضيع للكامب الجاي (Q12 - متعدد)', countByMulti(responses, 'topics'), TOPIC_LABELS],
+        ['رغبة الاستمرار (Q14)', countBy(responses, 'continue'), CONTINUE_LABELS],
+      ];
+      sections.forEach(([title, counts, labels]) => {
+        out.push(`## ${title}`);
+        sortDesc(counts).forEach(([k, c]) => {
+          const pct = total ? Math.round((c / total) * 100) : 0;
+          out.push(`- **${labels[k] || k}:** ${c} (${pct}%)`);
+        });
+        out.push('');
+      });
+
+      // Section 6
+      const s6Responses = responses.filter(r => r.section6Filled);
+      if (s6Responses.length) {
+        out.push(`## القسم الاختياري - ميزات التطبيق (Q18)`);
+        sortDesc(countByMulti(s6Responses, 'appFeatures')).forEach(([k, c]) => {
+          const pct = s6Responses.length ? Math.round((c / s6Responses.length) * 100) : 0;
+          out.push(`- **${APP_FEATURE_LABELS[k] || k}:** ${c} (${pct}% من اللي ملوا القسم)`);
+        });
+        out.push('');
+        out.push(`## المسار العملي (Q19)`);
+        sortDesc(countBy(s6Responses, 'practicalTrack')).forEach(([k, c]) => {
+          out.push(`- **${PRACTICAL_TRACK_LABELS[k] || k}:** ${c}`);
+        });
+        out.push('');
+      }
+
+      // Rating distribution
+      out.push(`## توزيع التقييم (1-10)`);
+      const ratingC = {};
+      responses.forEach(r => { if (typeof r.rating === 'number') ratingC[r.rating] = (ratingC[r.rating] || 0) + 1; });
+      for (let i = 1; i <= 10; i++) {
+        out.push(`- **${i}:** ${ratingC[i] || 0}`);
+      }
+      out.push('');
+
+      return out.join('\n');
+    }
+
+    function buildOpenResponsesExport() {
+      const out = [];
+      out.push(`# الإجابات المفتوحة - معسكر هختار صحتي`);
+      out.push(`*تاريخ التصدير: ${new Date().toLocaleString('ar-EG')}*\n`);
+
+      const fields = [
+        { key: 'expectations', label: 'Q6: قبل ما تيجي، كنت متوقع تلاقي إيه؟' },
+        { key: 'touched', label: 'Q7: أكتر فقرة أو لحظة لمستك؟ وليه؟' },
+        { key: 'changed', label: 'Q8: حاجة سمعتها وغيرت تفكيرك' },
+        { key: 'missing', label: 'Q10: حاجة حسيت إنها ناقصة أو ممكن تتعمل بشكل مختلف' },
+        { key: 'ifMinistry', label: 'Q13: لو كنت مكان وزارة الشباب' },
+        { key: 'final', label: 'Q15: حاجة أخيرة عايز تقولها' },
+        { key: 'knownServices', label: 'Q16: خدمات تعرفها تساعد في الإقلاع' },
+        { key: 'appWhatWouldRecommend', label: 'Q17: إيه يخليك ترشّح التطبيق' },
+        { key: 'appFeaturesOther', label: 'Q18 (نص حر): ميزة تانية للتطبيق' },
+      ];
+
+      fields.forEach(f => {
+        const items = responses
+          .map((r, i) => ({ idx: i + 1, txt: (r[f.key] || '').trim(), age: r.age, smoking: r.smoking, rating: r.rating }))
+          .filter(x => x.txt);
+        if (!items.length) return;
+        out.push(`\n## ${f.label}`);
+        out.push(`*عدد الإجابات: ${items.length}*\n`);
+        items.forEach(item => {
+          const meta = [
+            AGE_LABELS[item.age] || '—',
+            SMOKING_LABELS[item.smoking] || '—',
+            `تقييم: ${item.rating || '—'}`
+          ].join(' · ');
+          out.push(`**[${item.idx}]** _(${meta})_`);
+          out.push(`> ${item.txt.replace(/\n/g, '\n> ')}\n`);
+        });
+      });
+
+      return out.join('\n');
+    }
+
+    function buildFullExport() {
+      return buildStatsExport() + '\n\n---\n\n' + buildOpenResponsesExport();
+    }
+
+    function buildJsonExport() {
+      return JSON.stringify({
+        exportedAt: new Date().toISOString(),
+        totalResponses: responses.length,
+        contactLeadsCount,
+        responses: responses
+      }, null, 2);
+    }
+
+    function getExportData(type) {
+      switch (type) {
+        case 'full': return buildFullExport();
+        case 'stats': return buildStatsExport();
+        case 'open': return buildOpenResponsesExport();
+        case 'json': return buildJsonExport();
+        default: return '';
+      }
+    }
+
+    // ─── Toast ───
+    const toastEl = document.getElementById('toast');
+    let toastTimer;
+    function toast(msg, type = '') {
+      toastEl.textContent = msg;
+      toastEl.className = 'toast is-visible' + (type ? ' is-' + type : '');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('is-visible'), 2800);
+    }
+
+    // ─── Copy to clipboard ───
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        toast('تم النسخ', 'success');
+      } catch {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          toast('تم النسخ', 'success');
+        } catch {
+          toast('فشل النسخ - الصق يدوياً', 'error');
+        }
+        document.body.removeChild(ta);
+      }
+    }
+
+    // ─── Tabs ───
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('is-active', t === tab));
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.toggle('is-active', tc.dataset.tabContent === target));
+      });
+    });
+
+    // ─── Export buttons ───
+    document.querySelectorAll('[data-export]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const type = btn.dataset.export;
+        const show = btn.dataset.show === '1';
+        const data = getExportData(type);
+        if (show) {
+          const out = document.getElementById('exportOutput');
+          out.textContent = data;
+          out.classList.add('is-visible');
+          out.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        } else {
+          copyToClipboard(data);
+        }
+      });
+    });
+
+    // Download JSON
+    document.getElementById('downloadJson').addEventListener('click', () => {
+      const blob = new Blob([buildJsonExport()], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `basmatak-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Copy prompt
+    document.getElementById('copyPrompt').addEventListener('click', () => {
+      copyToClipboard(document.getElementById('suggestedPrompt').textContent);
+    });
+
+    // Response browser interactivity
+    ['respField', 'respFilterAge', 'respFilterSmoking', 'respFilterRating'].forEach(id => {
+      document.getElementById(id).addEventListener('change', renderResponses);
+    });
+    document.getElementById('respSearch').addEventListener('input', renderResponses);
+    document.getElementById('respCopy').addEventListener('click', () => {
+      const cards = document.querySelectorAll('.response-card');
+      const out = [];
+      cards.forEach(c => {
+        const meta = c.querySelector('.response-card__meta')?.textContent.trim() || '';
+        const txt = c.querySelector('.response-card__text')?.textContent.trim() || '';
+        out.push(`(${meta})\n${txt}\n---`);
+      });
+      copyToClipboard(out.join('\n'));
+    });
+
+    // Refresh button
+    document.getElementById('refreshBtn').addEventListener('click', loadData);
+
+    // ─── Markdown to HTML (simple) ───
+    function mdToHtml(md) {
+      if (!md) return '';
+      let html = escapeHtml(md);
+      // Headers
+      html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+      // Blockquotes
+      html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+      // Bold
+      html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+      // Italic
+      html = html.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+      // Inline code
+      html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+      // Lists
+      html = html.replace(/^[-*] (.+)$/gm, '<li>$1</li>');
+      html = html.replace(/(<li>.*<\/li>\n?)+/g, m => '<ul>' + m + '</ul>');
+      html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+      // Paragraphs
+      html = html.split(/\n\n+/).map(p => {
+        if (/^<(h[1-3]|ul|blockquote)/.test(p.trim())) return p;
+        return p.trim() ? '<p>' + p.trim().replace(/\n/g, '<br>') + '</p>' : '';
+      }).join('\n');
+      return html;
+    }
+
+    // ─── Analysis blocks ───
+    const ANALYSIS_BLOCKS = [
+      { id: 'executive_summary', title: 'الملخص التنفيذي', icon: '١' },
+      { id: 'key_themes', title: 'أهم الموضوعات والأنماط', icon: '٢' },
+      { id: 'touching_moments', title: 'أكتر اللحظات المؤثرة', icon: '٣' },
+      { id: 'critiques_gaps', title: 'الانتقادات والفجوات', icon: '٤' },
+      { id: 'recommendations', title: 'توصيات للكامبات الجاية', icon: '٥' },
+      { id: 'demographic_insights', title: 'تحليل ديموغرافي', icon: '٦' },
+      { id: 'golden_quotes', title: 'الاقتباسات الذهبية', icon: '٧' },
+      { id: 'extra_notes', title: 'ملاحظات إضافية / مساحة حرة', icon: '+' },
+    ];
+
+    let analysesData = {};
+
+    async function loadAnalyses() {
+      // Try Firebase first
+      try {
+        const snap = await getDoc(doc(db, ANALYSES_COLLECTION, 'main'));
+        if (snap.exists()) {
+          analysesData = snap.data();
+        }
+      } catch (e) {
+        console.warn('Firebase analyses load failed, trying localStorage', e);
+      }
+      // Merge localStorage as fallback
+      try {
+        const local = JSON.parse(localStorage.getItem('basmatak_analyses') || '{}');
+        // Local wins only if firebase is empty
+        if (Object.keys(analysesData).length === 0) {
+          analysesData = local;
+        }
+      } catch {}
+      renderAnalysisBlocks();
+    }
+
+    async function saveAnalysis(blockId, content) {
+      analysesData[blockId] = {
+        content: content,
+        updatedAt: new Date().toISOString()
+      };
+      // Save to localStorage immediately
+      try {
+        localStorage.setItem('basmatak_analyses', JSON.stringify(analysesData));
+      } catch {}
+      // Save to Firebase
+      try {
+        await setDoc(doc(db, ANALYSES_COLLECTION, 'main'), analysesData);
+        toast('تم الحفظ في فايربيز', 'success');
+      } catch (e) {
+        console.error('Firebase save failed', e);
+        toast('تم الحفظ محلياً (فايربيز فشل)', 'error');
+      }
+    }
+
+    function renderAnalysisBlocks() {
+      const grid = document.getElementById('analysisGrid');
+      grid.innerHTML = ANALYSIS_BLOCKS.map(b => {
+        const data = analysesData[b.id] || {};
+        const hasContent = !!(data.content && data.content.trim());
+        const updatedStr = data.updatedAt ? `آخر تحديث: ${new Date(data.updatedAt).toLocaleString('ar-EG')}` : '';
+        return `
+          <div class="analysis-block" data-block-id="${b.id}">
+            <div class="analysis-block__head">
+              <div style="display:flex; align-items:center; gap:12px;">
+                <div class="analysis-block__icon">${b.icon}</div>
+                <div class="analysis-block__title">${b.title}</div>
+              </div>
+              <div style="display:flex; gap:6px;">
+                <button class="btn btn--small" data-action="edit">${hasContent ? 'تعديل' : 'إضافة'}</button>
+                ${hasContent ? '<button class="btn btn--small" data-action="copy">نسخ</button>' : ''}
+              </div>
+            </div>
+            <div class="analysis-block__body">
+              <div class="analysis-block__display">${mdToHtml(data.content || '')}</div>
+              <div class="analysis-block__editor">
+                <textarea class="analysis-textarea" placeholder="الصق تحليل كلود هنا. يدعم Markdown (## للعناوين، ** للنص البارز، - للقوائم، > للاقتباسات).">${escapeHtml(data.content || '')}</textarea>
+                <div class="analysis-block__actions">
+                  <button class="btn" data-action="cancel">إلغاء</button>
+                  ${hasContent ? '<button class="btn btn--terra" data-action="delete">حذف</button>' : ''}
+                  <button class="btn btn--primary" data-action="save">حفظ</button>
+                </div>
+              </div>
+              ${updatedStr ? `<div class="analysis-block__updated">${updatedStr}</div>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Wire up actions
+      grid.querySelectorAll('.analysis-block').forEach(block => {
+        const id = block.dataset.blockId;
+        block.querySelector('[data-action="edit"]')?.addEventListener('click', () => {
+          block.classList.add('is-editing');
+          block.querySelector('textarea').focus();
+        });
+        block.querySelector('[data-action="cancel"]')?.addEventListener('click', () => {
+          block.classList.remove('is-editing');
+          block.querySelector('textarea').value = analysesData[id]?.content || '';
+        });
+        block.querySelector('[data-action="save"]')?.addEventListener('click', async () => {
+          const content = block.querySelector('textarea').value;
+          await saveAnalysis(id, content);
+          renderAnalysisBlocks();
+        });
+        block.querySelector('[data-action="copy"]')?.addEventListener('click', () => {
+          copyToClipboard(analysesData[id]?.content || '');
+        });
+        block.querySelector('[data-action="delete"]')?.addEventListener('click', async () => {
+          if (!confirm('متأكد من حذف ده؟')) return;
+          await saveAnalysis(id, '');
+          renderAnalysisBlocks();
+        });
+      });
+    }
+
+    // ─── Data loading ───
+    async function loadData() {
+      try {
+        document.getElementById('statusText').textContent = 'جاري التحميل...';
+        const snap = await getDocs(collection(db, COLLECTION_NAME));
+        responses = snap.docs.map(d => d.data());
+        // Get contact leads count (without exposing the data here)
+        try {
+          const leadsSnap = await getDocs(collection(db, CONTACTS_COLLECTION));
+          contactLeadsCount = leadsSnap.size;
+        } catch (e) {
+          console.warn('Could not load contact leads count', e);
+        }
+        renderAll();
+        document.getElementById('statusText').textContent = `${toAr(responses.length)} إجابة`;
+        document.querySelector('.status-pill__dot').classList.remove('is-error');
+        document.getElementById('loading').classList.add('is-hidden');
+      } catch (err) {
+        console.error('Load failed:', err);
+        document.getElementById('statusText').textContent = 'خطأ في الاتصال';
+        document.querySelector('.status-pill__dot').classList.add('is-error');
+        document.getElementById('loading').classList.add('is-hidden');
+        toast('فشل تحميل البيانات', 'error');
+      }
+    }
+
+    function renderAll() {
+      renderOverview();
+      renderDemographics();
+      renderEngagement();
+      renderNeeds();
+      renderSection6();
+      renderResponses();
+    }
+
+    // Live updates
+    function startLive() {
+      onSnapshot(collection(db, COLLECTION_NAME), snap => {
+        responses = snap.docs.map(d => d.data());
+        renderAll();
+        document.getElementById('statusText').textContent = `${toAr(responses.length)} إجابة`;
+      });
+    }
+
+    // Init
+    loadData().then(() => {
+      startLive();
+      loadAnalyses();
+    });
+
+  </script>
+
+</body>
+</html>
