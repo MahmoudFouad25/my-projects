@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0F3D3E">
+  <title>بصمتك — العرض الحي</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@400;500;600;700&family=Tajawal:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+
+    :root {
+      --paper: #F4EFE3;
+      --paper-soft: #FBF7EC;
+      --paper-deep: #EBE3D0;
+      --ink: #1F1A14;
+      --ink-soft: #4A3F30;
+      --ink-faint: #8B7E68;
+      --line: #D9CFB8;
+      --teal: #0F3D3E;
+      --teal-light: #1F5556;
+      --teal-deep: #082A2B;
+      --terra: #B8451F;
+      --terra-light: #D45B30;
+      --gold: #C9994A;
+      --gold-light: #E0B66A;
+    }
+
+    body {
+      font-family: 'Tajawal', system-ui, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    /* Paper texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background-image:
+        radial-gradient(circle at 15% 20%, rgba(184, 69, 31, 0.05), transparent 45%),
+        radial-gradient(circle at 85% 80%, rgba(15, 61, 62, 0.06), transparent 50%);
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.35;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.6  0 0 0 0 0.5  0 0 0 0 0.3  0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* ─── Top bar ─── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(244, 239, 227, 0.92), rgba(244, 239, 227, 0));
+      backdrop-filter: blur(6px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'El Messiri', serif;
+    }
+    .brand__logo {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--paper-soft);
+      font-weight: 700;
+      font-size: 20px;
+    }
+    .brand__name {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--teal);
+    }
+    .brand__sub {
+      font-size: 12px;
+      color: var(--ink-faint);
+      letter-spacing: 0.2em;
+    }
+
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'El Messiri', serif;
+      font-size: 14px;
+      color: var(--ink-soft);
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.6);
+      border: 1px solid var(--line);
+      border-radius: 100px;
+    }
+    .live-status__dot {
+      width: 8px; height: 8px;
+      background: var(--terra);
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+    }
+
+    /* ─── Stage / Panel container ─── */
+    .stage {
+      position: relative;
+      z-index: 3;
+      width: 100vw;
+      height: 100vh;
+      padding: 100px 60px 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel {
+      position: absolute;
+      inset: 100px 60px 100px 60px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(40px) scale(0.98);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+      text-align: center;
+    }
+    .panel.is-active {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .panel__eyebrow {
+      font-family: 'El Messiri', serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.4em;
+      color: var(--terra);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .panel__eyebrow::before,
+    .panel__eyebrow::after {
+      content: '';
+      width: 32px; height: 1px;
+      background: var(--terra);
+      opacity: 0.4;
+    }
+    .panel__title {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(40px, 5vw, 68px);
+      font-weight: 700;
+      color: var(--teal);
+      line-height: 1.1;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+    .panel__sub {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(18px, 2vw, 26px);
+      color: var(--ink-soft);
+      margin-bottom: 50px;
+      max-width: 800px;
+    }
+
+    /* ─── Panel 1: Counter ─── */
+    .counter-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+    }
+    .big-number {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(140px, 22vw, 280px);
+      font-weight: 700;
+      color: var(--teal);
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      position: relative;
+      display: inline-block;
+    }
+    .big-number::after {
+      content: '';
+      position: absolute;
+      bottom: 18px;
+      right: -8px;
+      width: 14px;
+      height: 14px;
+      background: var(--terra);
+      border-radius: 50%;
+    }
+    .counter-label {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(22px, 2.5vw, 34px);
+      color: var(--ink-soft);
+      font-weight: 500;
+    }
+    .rating-strip {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      margin-top: 30px;
+      padding: 22px 44px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1.5px solid var(--line);
+      border-radius: 100px;
+    }
+    .rating-strip__label {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(16px, 1.4vw, 22px);
+      color: var(--ink-faint);
+    }
+    .rating-strip__value {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(40px, 4vw, 60px);
+      font-weight: 700;
+      color: var(--terra);
+      line-height: 1;
+    }
+    .rating-strip__max {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(20px, 2vw, 28px);
+      color: var(--ink-faint);
+    }
+
+    /* ─── Bars (demographics, motivations, challenges, topics) ─── */
+    .bars-grid {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 240px 1fr 80px;
+      align-items: center;
+      gap: 20px;
+      opacity: 0;
+      transform: translateX(-20px);
+      animation: barIn 0.5s ease forwards;
+    }
+    @keyframes barIn {
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .bar-row__label {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(18px, 1.7vw, 24px);
+      color: var(--ink);
+      font-weight: 500;
+      text-align: right;
+    }
+    .bar-row__track {
+      height: 28px;
+      background: rgba(15, 61, 62, 0.08);
+      border-radius: 100px;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-row__fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--teal-light));
+      border-radius: 100px;
+      width: 0%;
+      transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+    }
+    .bar-row:nth-child(1) .bar-row__fill { background: linear-gradient(90deg, var(--terra), var(--terra-light)); }
+    .bar-row:nth-child(2) .bar-row__fill { background: linear-gradient(90deg, var(--teal), var(--teal-light)); }
+    .bar-row:nth-child(3) .bar-row__fill { background: linear-gradient(90deg, var(--gold), var(--gold-light)); }
+    .bar-row__value {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(20px, 1.8vw, 28px);
+      font-weight: 600;
+      color: var(--teal);
+      text-align: left;
+    }
+
+    /* ─── Two-column dual stats (panel 2) ─── */
+    .dual-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      width: 100%;
+      max-width: 1300px;
+    }
+    .dual-grid__col h3 {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(20px, 1.8vw, 28px);
+      color: var(--terra);
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      font-weight: 600;
+    }
+    .mini-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mini-bar {
+      display: grid;
+      grid-template-columns: 130px 1fr 50px;
+      align-items: center;
+      gap: 14px;
+    }
+    .mini-bar__label {
+      font-size: clamp(15px, 1.2vw, 18px);
+      color: var(--ink-soft);
+      text-align: right;
+    }
+    .mini-bar__track {
+      height: 16px;
+      background: rgba(15, 61, 62, 0.08);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .mini-bar__fill {
+      height: 100%;
+      background: var(--teal);
+      border-radius: 100px;
+      width: 0%;
+      transition: width 0.8s ease;
+    }
+    .mini-bar__value {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(15px, 1.2vw, 18px);
+      color: var(--ink);
+      font-weight: 600;
+      text-align: left;
+    }
+
+    /* ─── Donut (smoking) ─── */
+    .donut-wrap {
+      display: flex;
+      align-items: center;
+      gap: 80px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .donut {
+      width: clamp(280px, 28vw, 420px);
+      height: clamp(280px, 28vw, 420px);
+      position: relative;
+    }
+    .donut svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    .donut__center {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .donut__big {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(60px, 7vw, 90px);
+      font-weight: 700;
+      color: var(--teal);
+      line-height: 1;
+    }
+    .donut__lbl {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(14px, 1.3vw, 18px);
+      color: var(--ink-faint);
+      margin-top: 6px;
+    }
+    .donut-legend {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-width: 380px;
+    }
+    .legend-row {
+      display: grid;
+      grid-template-columns: 16px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding: 8px 0;
+    }
+    .legend-row__sw {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+    }
+    .legend-row__lbl {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(15px, 1.3vw, 19px);
+      color: var(--ink-soft);
+    }
+    .legend-row__val {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(16px, 1.4vw, 20px);
+      font-weight: 600;
+      color: var(--teal);
+    }
+
+    /* ─── Quote panel ─── */
+    .quote-stage {
+      max-width: 1100px;
+      width: 100%;
+      padding: 0 40px;
+      position: relative;
+    }
+    .quote-stage::before {
+      content: '"';
+      position: absolute;
+      top: -80px;
+      right: -20px;
+      font-family: 'El Messiri', serif;
+      font-size: 240px;
+      color: var(--terra);
+      opacity: 0.18;
+      line-height: 1;
+      font-weight: 700;
+    }
+    .quote-text {
+      font-family: 'El Messiri', serif;
+      font-size: clamp(32px, 3.2vw, 48px);
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.5;
+      margin-bottom: 36px;
+      animation: quoteIn 0.8s ease;
+      position: relative;
+      z-index: 2;
+    }
+    @keyframes quoteIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .quote-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      font-family: 'El Messiri', serif;
+      font-size: clamp(15px, 1.3vw, 19px);
+      color: var(--ink-faint);
+    }
+    .quote-meta__line {
+      width: 40px; height: 1px;
+      background: var(--line);
+    }
+
+    /* ─── Bottom indicators ─── */
+    .indicators {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      gap: 8px;
+    }
+    .indicator-dot {
+      width: 8px; height: 8px;
+      background: var(--ink-faint);
+      border-radius: 50%;
+      opacity: 0.3;
+      transition: all 0.4s ease;
+    }
+    .indicator-dot.is-active {
+      width: 32px;
+      border-radius: 100px;
+      background: var(--teal);
+      opacity: 1;
+    }
+
+    /* Live ticker */
+    .ticker {
+      position: fixed;
+      bottom: 60px;
+      left: 0; right: 0;
+      z-index: 19;
+      padding: 10px 32px;
+      font-family: 'El Messiri', serif;
+      font-size: 14px;
+      color: var(--ink-faint);
+      text-align: center;
+      pointer-events: none;
+    }
+    .ticker__count {
+      color: var(--teal);
+      font-weight: 600;
+      margin: 0 4px;
+    }
+    .ticker__new {
+      color: var(--terra);
+      font-weight: 600;
+      animation: bounce 0.6s ease;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      40% { transform: scale(1.2); }
+    }
+
+    /* Loading state */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--paper);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 24px;
+      transition: opacity 0.6s ease;
+    }
+    .loading-screen.is-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .loading-screen__title {
+      font-family: 'El Messiri', serif;
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--teal);
+    }
+    .loading-screen__sub {
+      font-family: 'El Messiri', serif;
+      font-size: 18px;
+      color: var(--ink-faint);
+    }
+    .loading-spinner {
+      width: 48px; height: 48px;
+      border: 3px solid var(--line);
+      border-top-color: var(--terra);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+    }
+    .empty-state__icon {
+      font-size: 80px;
+      margin-bottom: 24px;
+    }
+    .empty-state__title {
+      font-family: 'El Messiri', serif;
+      font-size: 36px;
+      font-weight: 600;
+      color: var(--teal);
+      margin-bottom: 14px;
+    }
+    .empty-state__msg {
+      font-family: 'El Messiri', serif;
+      font-size: 20px;
+      color: var(--ink-soft);
+    }
+
+    /* Top decorative ornament */
+    .ornament {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.06;
+    }
+    .ornament--right {
+      right: -120px;
+      width: 400px;
+    }
+    .ornament--left {
+      left: -120px;
+      width: 400px;
+    }
+
+    /* Controls hint */
+    .controls-hint {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 19;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 11px;
+      color: var(--ink-faint);
+      letter-spacing: 0.1em;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    body:hover .controls-hint {
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      .stage { padding: 80px 20px 80px; }
+      .panel { inset: 80px 20px 80px 20px; }
+      .topbar { padding: 12px 16px; }
+      .dual-grid { grid-template-columns: 1fr; gap: 40px; }
+      .bar-row { grid-template-columns: 130px 1fr 60px; gap: 12px; }
+      .donut-wrap { gap: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-spinner"></div>
+    <h1 class="loading-screen__title">بصمتك</h1>
+    <p class="loading-screen__sub">جاري الاتصال بالأصوات...</p>
+  </div>
+
+  <!-- Decorative ornaments -->
+  <svg class="ornament ornament--right" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="200" r="80" stroke="#0F3D3E" stroke-width="2" fill="none"/>
+    <circle cx="100" cy="200" r="120" stroke="#B8451F" stroke-width="1" fill="none"/>
+    <circle cx="100" cy="200" r="160" stroke="#0F3D3E" stroke-width="1" fill="none"/>
+  </svg>
+  <svg class="ornament ornament--left" viewBox="0 0 200 400" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="200" r="80" stroke="#B8451F" stroke-width="2" fill="none"/>
+    <circle cx="100" cy="200" r="120" stroke="#0F3D3E" stroke-width="1" fill="none"/>
+    <circle cx="100" cy="200" r="160" stroke="#B8451F" stroke-width="1" fill="none"/>
+  </svg>
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand__logo">ه</div>
+      <div>
+        <div class="brand__name">هختار صحتي</div>
+        <div class="brand__sub">معسكر ٢٠٢٦</div>
+      </div>
+    </div>
+    <div class="live-status">
+      <div class="live-status__dot"></div>
+      <span>عرض حي</span>
+    </div>
+  </header>
+
+  <div class="controls-hint">المسافة للتنقل · F لملء الشاشة</div>
+
+  <!-- Stage with panels -->
+  <main class="stage" id="stage">
+
+    <!-- Panel 0: Counter -->
+    <section class="panel" data-panel="0">
+      <div class="panel__eyebrow"><span>صوتكم وصل</span></div>
+      <div class="counter-display">
+        <div class="big-number" id="counterBig">٠</div>
+        <div class="counter-label">بصمة وصلت لينا</div>
+        <div class="rating-strip">
+          <span class="rating-strip__label">تقييمكم للكامب</span>
+          <span class="rating-strip__value" id="counterRating">—</span>
+          <span class="rating-strip__max">/ ١٠</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel 1: Demographics -->
+    <section class="panel" data-panel="1">
+      <div class="panel__eyebrow"><span>إحنا مين؟</span></div>
+      <h2 class="panel__title">شريحة بكل ألوانها</h2>
+      <p class="panel__sub">أعمار مختلفة، خلفيات مختلفة، حكايات مختلفة — كلنا في القاعة دي</p>
+      <div class="dual-grid">
+        <div class="dual-grid__col">
+          <h3>الفئة العمرية</h3>
+          <div class="mini-bars" id="ageBars"></div>
+        </div>
+        <div class="dual-grid__col">
+          <h3>الوضع دلوقتي</h3>
+          <div class="mini-bars" id="statusBars"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel 2: Smoking donut -->
+    <section class="panel" data-panel="2">
+      <div class="panel__eyebrow"><span>علاقتنا بالتدخين</span></div>
+      <h2 class="panel__title">مش كلنا مدخنين</h2>
+      <p class="panel__sub">الكامب فضاء لكل اللي عايز يفهم نفسه أكتر — مش بس اللي عايز يبطّل</p>
+      <div class="donut-wrap">
+        <div class="donut">
+          <svg viewBox="0 0 200 200" id="donutSvg">
+            <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(15,61,62,0.06)" stroke-width="28"/>
+          </svg>
+          <div class="donut__center">
+            <div class="donut__big" id="donutBig">—</div>
+            <div class="donut__lbl">غير مدخنين</div>
+          </div>
+        </div>
+        <div class="donut-legend" id="donutLegend"></div>
+      </div>
+    </section>
+
+    <!-- Panel 3: Motivations -->
+    <section class="panel" data-panel="3">
+      <div class="panel__eyebrow"><span>ليه جينا؟</span></div>
+      <h2 class="panel__title">دوافع متنوعة جابتنا هنا</h2>
+      <p class="panel__sub">كل واحد له سببه — وكلهم مرحب بيهم</p>
+      <div class="bars-grid" id="motivationBars"></div>
+    </section>
+
+    <!-- Panel 4: Challenges -->
+    <section class="panel" data-panel="4">
+      <div class="panel__eyebrow"><span>تحدياتنا</span></div>
+      <h2 class="panel__title">اللي بنواجهه في حياتنا</h2>
+      <p class="panel__sub">صراحة من غير مكياج — دي تحديات جيلنا</p>
+      <div class="bars-grid" id="challengeBars"></div>
+    </section>
+
+    <!-- Panel 5: Topics for next camp -->
+    <section class="panel" data-panel="5">
+      <div class="panel__eyebrow"><span>الكامب الجاي</span></div>
+      <h2 class="panel__title">المواضيع اللي عايزينها</h2>
+      <p class="panel__sub">صوتكم بيرسم ملامح اللي جاي</p>
+      <div class="bars-grid" id="topicBars"></div>
+    </section>
+
+    <!-- Panel 6: Quote wall -->
+    <section class="panel" data-panel="6">
+      <div class="panel__eyebrow"><span>صوتكم بيقول</span></div>
+      <h2 class="panel__title">من كلامكم</h2>
+      <div class="quote-stage" id="quoteStage">
+        <p class="quote-text" id="quoteText">جاري تحميل الأصوات...</p>
+        <div class="quote-meta">
+          <span class="quote-meta__line"></span>
+          <span id="quoteMeta">من إجابات الكامب</span>
+          <span class="quote-meta__line"></span>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Indicator dots -->
+  <div class="indicators" id="indicators"></div>
+
+  <!-- Live ticker -->
+  <div class="ticker" id="ticker">
+    <span>آخر تحديث: <span id="tickerTime">—</span></span>
+    <span style="margin: 0 16px; opacity: 0.4;">·</span>
+    <span>إجمالي الأصوات: <span class="ticker__count" id="tickerCount">٠</span></span>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDZvB9jIzd5ponaiudD61PiL8tfajEHx2A",
+      authDomain: "life-makers-diagnostic.firebaseapp.com",
+      projectId: "life-makers-diagnostic",
+      storageBucket: "life-makers-diagnostic.appspot.com",
+      messagingSenderId: "137599837774",
+      appId: "1:137599837774:web:e5f2f6a5c547c265fc0fba"
+    };
+    const COLLECTION_NAME = 'responses_camp_round_1';
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // ─── State ───
+    let responses = [];
+    let currentPanel = 0;
+    let panelTimer = null;
+    let quoteIndex = 0;
+    let quoteTimer = null;
+    let lastCount = 0;
+
+    const PANEL_DURATION = 11000; // 11 seconds per panel
+    const QUOTE_DURATION = 6500;  // 6.5 seconds per quote
+
+    // ─── Arabic numerals ───
+    const arDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    function toAr(n) {
+      return String(n).replace(/\d/g, d => arDigits[parseInt(d)]);
+    }
+    function toArDecimal(n) {
+      return n.toFixed(1).replace(/\d/g, d => arDigits[parseInt(d)]).replace('.', '٫');
+    }
+
+    // ─── Label maps ───
+    const AGE_LABELS = {
+      '17-19': '١٧ - ١٩',
+      '20-23': '٢٠ - ٢٣',
+      '24-29': '٢٤ - ٢٩',
+      '30-39': '٣٠ - ٣٩',
+      '40+': '٤٠ وأكتر'
+    };
+    const STATUS_LABELS = {
+      'thanawi': 'طالب ثانوي',
+      'university': 'طالب جامعي',
+      'grad-unemployed': 'خريج',
+      'employed': 'شغّال',
+      'not-working': 'غير عامل',
+      'business-owner': 'صاحب شغل'
+    };
+    const SMOKING_LABELS = {
+      'current-smoker': 'بدخّن دلوقتي',
+      'ex-smoker': 'كنت بدخن وبطّلت',
+      'tried': 'جربت ومكملتش',
+      'never': 'ما جربتش خالص',
+      'shisha-only': 'شيشة بس',
+      'vape': 'إلكتروني (فايب/IQOS)'
+    };
+    const SMOKING_COLORS = {
+      'current-smoker': '#B8451F',
+      'ex-smoker': '#C9994A',
+      'tried': '#E0B66A',
+      'never': '#0F3D3E',
+      'shisha-only': '#1F5556',
+      'vape': '#8B7E68'
+    };
+    const MOTIVATION_LABELS = {
+      'curiosity': 'فضول وعايز أعرف',
+      'referral': 'ناس قالولي عنه',
+      'quit': 'بدخّن وعايز أبطّل',
+      'self-discovery': 'عايز أعرف نفسي',
+      'help-others': 'عايز أساعد قريب',
+      'fun': 'الجو والترفيه',
+      'certificate': 'الشهادة',
+      'dont-know': 'مش عارف بصراحة'
+    };
+    const CHALLENGE_LABELS = {
+      'study': 'الدراسة وضغطها',
+      'work': 'الشغل أو البطالة',
+      'money': 'الفلوس والأمان المالي',
+      'family': 'علاقات الأهل',
+      'friends': 'علاقات الأصحاب',
+      'romance': 'علاقات عاطفية',
+      'mental-health': 'الصحة النفسية',
+      'physical-health': 'الصحة الجسدية',
+      'purpose': 'مش لاقي اتجاه',
+      'addiction': 'إدمان',
+      'none': 'مفيش تحديات'
+    };
+    const TOPIC_LABELS = {
+      'mental-health': 'الصحة النفسية',
+      'life-skills': 'مهارات الحياة',
+      'confidence': 'بناء الشخصية',
+      'career': 'الشغل والمهارات',
+      'finance': 'الفلوس وريادة الأعمال',
+      'physical': 'الصحة الجسدية',
+      'social': 'الذكاء الاجتماعي',
+      'addictions': 'الإدمانات',
+      'identity': 'الهوية والقيم',
+      'relationships': 'العلاقات والزواج',
+      'tech': 'التكنولوجيا والـ AI'
+    };
+
+    // ─── Aggregations ───
+    function countBy(arr, key) {
+      const counts = {};
+      arr.forEach(r => {
+        const v = r[key];
+        if (v) counts[v] = (counts[v] || 0) + 1;
+      });
+      return counts;
+    }
+    function countByMulti(arr, key) {
+      const counts = {};
+      arr.forEach(r => {
+        const v = r[key];
+        if (Array.isArray(v)) v.forEach(x => counts[x] = (counts[x] || 0) + 1);
+      });
+      return counts;
+    }
+    function topN(counts, n) {
+      return Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, n);
+    }
+    function avg(arr, key) {
+      const vals = arr.map(r => r[key]).filter(v => typeof v === 'number');
+      if (!vals.length) return 0;
+      return vals.reduce((a, b) => a + b, 0) / vals.length;
+    }
+
+    // ─── Animated counter ───
+    function animateNumber(el, from, to, duration = 1500) {
+      const start = performance.now();
+      function tick(now) {
+        const elapsed = now - start;
+        const t = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const v = Math.round(from + (to - from) * eased);
+        el.textContent = toAr(v);
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ─── Render Panel 0: Counter ───
+    function renderCounter() {
+      const total = responses.length;
+      const avgRating = avg(responses, 'rating');
+      const counterEl = document.getElementById('counterBig');
+      const prevText = counterEl.textContent;
+      const prevNum = parseInt(prevText.replace(/[^\d]/g, '').replace(/[٠-٩]/g, d => arDigits.indexOf(d))) || 0;
+      animateNumber(counterEl, prevNum, total);
+      document.getElementById('counterRating').textContent = total ? toArDecimal(avgRating) : '—';
+    }
+
+    // ─── Render Mini Bars ───
+    function renderMiniBars(containerId, counts, labels, total) {
+      const container = document.getElementById(containerId);
+      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+      container.innerHTML = sorted.map(([key, count]) => {
+        const pct = total ? Math.round((count / total) * 100) : 0;
+        return `
+          <div class="mini-bar">
+            <span class="mini-bar__label">${labels[key] || key}</span>
+            <div class="mini-bar__track"><div class="mini-bar__fill" style="width:${pct}%"></div></div>
+            <span class="mini-bar__value">${toAr(count)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ─── Render Big Bars ───
+    function renderBigBars(containerId, counts, labels, total, topCount = 6) {
+      const container = document.getElementById(containerId);
+      const sorted = topN(counts, topCount);
+      container.innerHTML = sorted.map(([key, count], i) => {
+        const pct = total ? Math.round((count / total) * 100) : 0;
+        return `
+          <div class="bar-row" style="animation-delay: ${i * 0.08}s">
+            <span class="bar-row__label">${labels[key] || key}</span>
+            <div class="bar-row__track"><div class="bar-row__fill" style="width:${pct}%"></div></div>
+            <span class="bar-row__value">${toAr(count)}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ─── Render Donut (smoking) ───
+    function renderDonut() {
+      const counts = countBy(responses, 'smoking');
+      const total = Object.values(counts).reduce((a, b) => a + b, 0);
+      const nonSmokers = (counts['never'] || 0) + (counts['ex-smoker'] || 0) + (counts['tried'] || 0);
+      const nonSmokerPct = total ? Math.round((nonSmokers / total) * 100) : 0;
+
+      document.getElementById('donutBig').textContent = toAr(nonSmokerPct) + '٪';
+
+      // Build donut SVG
+      const svg = document.getElementById('donutSvg');
+      const radius = 80;
+      const circ = 2 * Math.PI * radius;
+      const order = ['never', 'ex-smoker', 'tried', 'current-smoker', 'shisha-only', 'vape'];
+      let offset = 0;
+
+      // Clear existing segments (keep base track)
+      const existing = svg.querySelectorAll('.donut-seg');
+      existing.forEach(e => e.remove());
+
+      order.forEach(key => {
+        const count = counts[key] || 0;
+        if (!count) return;
+        const fraction = count / total;
+        const dash = fraction * circ;
+        const seg = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        seg.setAttribute('class', 'donut-seg');
+        seg.setAttribute('cx', '100');
+        seg.setAttribute('cy', '100');
+        seg.setAttribute('r', String(radius));
+        seg.setAttribute('fill', 'none');
+        seg.setAttribute('stroke', SMOKING_COLORS[key]);
+        seg.setAttribute('stroke-width', '28');
+        seg.setAttribute('stroke-dasharray', `${dash} ${circ - dash}`);
+        seg.setAttribute('stroke-dashoffset', String(-offset));
+        seg.style.transition = 'stroke-dasharray 0.8s ease';
+        svg.appendChild(seg);
+        offset += dash;
+      });
+
+      // Legend
+      const legend = document.getElementById('donutLegend');
+      legend.innerHTML = order
+        .filter(k => counts[k])
+        .map(k => {
+          const pct = total ? Math.round((counts[k] / total) * 100) : 0;
+          return `
+            <div class="legend-row">
+              <span class="legend-row__sw" style="background:${SMOKING_COLORS[k]}"></span>
+              <span class="legend-row__lbl">${SMOKING_LABELS[k]}</span>
+              <span class="legend-row__val">${toAr(pct)}٪</span>
+            </div>
+          `;
+        }).join('');
+    }
+
+    // ─── Render all panels ───
+    function renderAll() {
+      const total = responses.length;
+
+      renderCounter();
+      renderMiniBars('ageBars', countBy(responses, 'age'), AGE_LABELS, total);
+      renderMiniBars('statusBars', countBy(responses, 'status'), STATUS_LABELS, total);
+      renderDonut();
+      renderBigBars('motivationBars', countByMulti(responses, 'motivation'), MOTIVATION_LABELS, total, 6);
+      renderBigBars('challengeBars', countByMulti(responses, 'challenges'), CHALLENGE_LABELS, total, 6);
+      renderBigBars('topicBars', countByMulti(responses, 'topics'), TOPIC_LABELS, total, 6);
+
+      // Ticker
+      document.getElementById('tickerCount').textContent = toAr(total);
+      const now = new Date();
+      const h = now.getHours();
+      const m = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('tickerTime').textContent = toAr(`${h}:${m}`);
+    }
+
+    // ─── Quote rotation ───
+    function getQuotes() {
+      const quotes = [];
+      const fields = [
+        { key: 'touched', label: 'لحظة لمستني' },
+        { key: 'changed', label: 'حاجة غيرت تفكيري' },
+        { key: 'expectations', label: 'كنت متوقع' },
+        { key: 'final', label: 'كلمة أخيرة' },
+        { key: 'ifMinistry', label: 'لو كنت مكان الوزارة' },
+      ];
+      responses.forEach(r => {
+        fields.forEach(f => {
+          const v = r[f.key];
+          if (v && typeof v === 'string' && v.trim().length > 20 && v.trim().length < 280) {
+            // Filter out obvious non-quotes (like "مفيش")
+            const cleaned = v.trim();
+            if (!/^(مفيش|لا|نعم|ايوه|٠|٩|١٠|اوك|ok)$/i.test(cleaned)) {
+              quotes.push({ text: cleaned, meta: f.label });
+            }
+          }
+        });
+      });
+      return quotes;
+    }
+
+    function showNextQuote() {
+      const quotes = getQuotes();
+      const stage = document.getElementById('quoteStage');
+      const txtEl = document.getElementById('quoteText');
+      const metaEl = document.getElementById('quoteMeta');
+
+      if (!quotes.length) {
+        txtEl.textContent = 'في انتظار وصول إجاباتكم...';
+        metaEl.textContent = 'صوتكم ومكانه';
+        return;
+      }
+      // Shuffle if first time
+      if (quoteIndex >= quotes.length) quoteIndex = 0;
+      const q = quotes[quoteIndex % quotes.length];
+      txtEl.style.animation = 'none';
+      void txtEl.offsetWidth;
+      txtEl.style.animation = 'quoteIn 0.8s ease';
+      txtEl.textContent = q.text;
+      metaEl.textContent = q.meta;
+      quoteIndex++;
+    }
+
+    // ─── Panel rotation ───
+    const PANELS_COUNT = 7;
+    function buildIndicators() {
+      const ind = document.getElementById('indicators');
+      ind.innerHTML = Array.from({ length: PANELS_COUNT })
+        .map((_, i) => `<div class="indicator-dot" data-idx="${i}"></div>`)
+        .join('');
+      ind.querySelectorAll('.indicator-dot').forEach(d => {
+        d.addEventListener('click', () => {
+          const idx = parseInt(d.dataset.idx);
+          showPanel(idx);
+        });
+      });
+    }
+    function showPanel(idx) {
+      currentPanel = ((idx % PANELS_COUNT) + PANELS_COUNT) % PANELS_COUNT;
+      document.querySelectorAll('.panel').forEach((p, i) => {
+        p.classList.toggle('is-active', i === currentPanel);
+      });
+      document.querySelectorAll('.indicator-dot').forEach((d, i) => {
+        d.classList.toggle('is-active', i === currentPanel);
+      });
+
+      // Reset bar animations on the active panel
+      const active = document.querySelector('.panel.is-active');
+      if (active) {
+        active.querySelectorAll('.bar-row__fill, .mini-bar__fill').forEach(b => {
+          const w = b.style.width;
+          b.style.width = '0%';
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => { b.style.width = w; });
+          });
+        });
+      }
+
+      // Special handling for quote panel
+      if (currentPanel === 6) {
+        showNextQuote();
+        if (quoteTimer) clearInterval(quoteTimer);
+        quoteTimer = setInterval(showNextQuote, QUOTE_DURATION);
+      } else {
+        if (quoteTimer) {
+          clearInterval(quoteTimer);
+          quoteTimer = null;
+        }
+      }
+
+      // Reset rotation timer
+      if (panelTimer) clearTimeout(panelTimer);
+      const duration = currentPanel === 6 ? PANEL_DURATION + 8000 : PANEL_DURATION;
+      panelTimer = setTimeout(() => {
+        showPanel(currentPanel + 1);
+      }, duration);
+    }
+
+    // Keyboard controls
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === ' ') { e.preventDefault(); showPanel(currentPanel + 1); }
+      if (e.key === 'ArrowRight') showPanel(currentPanel - 1);
+      if (e.key === 'f' || e.key === 'F') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      }
+    });
+
+    // ─── Firebase live listener ───
+    function startLiveListener() {
+      const q = query(collection(db, COLLECTION_NAME));
+      onSnapshot(q, (snap) => {
+        responses = snap.docs.map(d => d.data());
+        const newCount = responses.length;
+
+        // Hide loading screen on first data
+        const loader = document.getElementById('loadingScreen');
+        if (!loader.classList.contains('is-hidden')) {
+          setTimeout(() => loader.classList.add('is-hidden'), 600);
+        }
+
+        // Show new response indicator
+        if (lastCount > 0 && newCount > lastCount) {
+          const ticker = document.getElementById('tickerCount');
+          ticker.classList.remove('ticker__new');
+          void ticker.offsetWidth;
+          ticker.classList.add('ticker__new');
+        }
+        lastCount = newCount;
+
+        renderAll();
+      }, (err) => {
+        console.error('Snapshot error:', err);
+        document.getElementById('loadingScreen').classList.add('is-hidden');
+      });
+    }
+
+    // ─── Init ───
+    buildIndicators();
+    showPanel(0);
+    startLiveListener();
+  </script>
+
+</body>
+</html>
