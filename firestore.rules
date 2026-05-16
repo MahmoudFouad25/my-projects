@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ───── Helpers ─────
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isEmcAdmin() {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/emc_admins/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/emc_admins/$(request.auth.uid)).data.isActive == true;
+    }
+
+    // ───── EMC Collections (محمية) ─────
+    match /emc_contacts/{doc} {
+      allow create: if true;  // النماذج العامة (Form A في المرحلة 3)
+      allow read, update, delete: if isEmcAdmin();
+    }
+
+    match /emc_events/{doc} {
+      allow create: if true;  // تسجيل الأحداث من النماذج العامة
+      allow read, update, delete: if isEmcAdmin();
+    }
+
+    match /emc_cohorts/{doc} {
+      allow read: if true;          // الكوهورتات معروضة للعامة
+      allow write: if isEmcAdmin();
+    }
+
+    match /emc_templates/{doc} {
+      allow read, write: if isEmcAdmin();
+    }
+
+    match /emc_admins/{doc} {
+      allow read: if isEmcAdmin();
+      allow write: if false;        // يدوي من Firebase Console
+    }
+
+    match /emc_segments/{doc} {
+      allow read, write: if isEmcAdmin();
+    }
+
+    match /emc_touchpoints/{doc} {
+      allow create: if true;        // tracking من landing pages
+      allow read, update, delete: if isEmcAdmin();
+    }
+
+    match /emc_opportunities/{doc} {
+      allow read, write: if isEmcAdmin();
+    }
+
+    match /emc_automations/{doc} {
+      allow read, write: if isEmcAdmin();
+    }
+
+    match /emc_referrals/{doc} {
+      allow read, write: if isEmcAdmin();
+    }
+  }
+}
