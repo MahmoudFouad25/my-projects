@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>إضافة جهة اتصال · EMC CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../css/emc-styles.css" />
+<script src="../js/emc-firebase.js"></script>
+<script src="../js/emc-utils.js"></script>
+<script src="../js/emc-contacts.js"></script>
+<script src="../js/emc-layout.js"></script>
+</head>
+<body data-screen-label="05 Add contact">
+
+<div id="emc-shell-root"></div>
+
+<template id="add-tpl">
+  <div class="emc-crumbs">
+    <a href="dashboard.html">لوحة التحكم</a>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    <a href="contacts.html">جهات الاتصال</a>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    <span>إضافة جديدة</span>
+  </div>
+
+  <div class="emc-page-head">
+    <div>
+      <h1 class="emc-page-title">إضافة جهة اتصال يدوياً</h1>
+      <div class="emc-page-sub">تعبئة الطبقات الـ 9 — الإلزامي بس الطبقة (أ) و(ب). الباقي بيتراكم مع تقدم الرحلة.</div>
+    </div>
+  </div>
+
+  <form id="add-form" style="display:grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: flex-start;">
+    <div>
+      <!-- ──────── Layer A — Identity (open by default) ──────── -->
+      <div class="form-section open" data-section="identity">
+        <div class="form-section-header">
+          <div class="form-section-num">أ</div>
+          <div>
+            <div class="form-section-title">الهوية الأساسية</div>
+            <div class="form-section-sub">مين هو، وفي أنهي شركة؟</div>
+          </div>
+          <span class="form-section-status">إلزامي</span>
+          <span class="form-section-chevron">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="form-section-body">
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">الاسم الكامل <span class="req">*</span></label>
+              <input class="input" name="identity.fullName" required placeholder="مثال: محمود فؤاد" />
+            </div>
+            <div class="field">
+              <label class="field-label">المنصب <span class="req">*</span></label>
+              <input class="input" name="identity.title" required placeholder="مثال: المؤسس والرئيس التنفيذي" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">اسم الشركة <span class="req">*</span></label>
+              <input class="input" name="identity.companyName" required />
+            </div>
+            <div class="field">
+              <label class="field-label">الصناعة</label>
+              <select class="select" name="identity.industry">
+                <option value="">— اختر —</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row-3">
+            <div class="field">
+              <label class="field-label">حجم الشركة</label>
+              <select class="select" name="identity.companySize"><option value="">—</option></select>
+            </div>
+            <div class="field">
+              <label class="field-label">نطاق الإيراد السنوي</label>
+              <select class="select" name="identity.revenueRange"><option value="">—</option></select>
+            </div>
+            <div class="field">
+              <label class="field-label">سنوات في السوق</label>
+              <select class="select" name="identity.yearsInBusiness"><option value="">—</option></select>
+            </div>
+          </div>
+          <div class="field-row-3">
+            <div class="field">
+              <label class="field-label">الدولة</label>
+              <select class="select" name="identity.country">
+                <option value="EG">مصر</option>
+                <option value="SA">السعودية</option>
+                <option value="AE">الإمارات</option>
+                <option value="KW">الكويت</option>
+                <option value="other">دولة أخرى</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label">المدينة</label>
+              <input class="input" name="identity.city" placeholder="القاهرة" />
+            </div>
+            <div class="field">
+              <label class="field-label">لغة التواصل</label>
+              <select class="select" name="identity.preferredLanguage">
+                <option value="ar">العربية</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──────── Layer B — Channels ──────── -->
+      <div class="form-section open" data-section="channels">
+        <div class="form-section-header">
+          <div class="form-section-num">ب</div>
+          <div>
+            <div class="form-section-title">قنوات التواصل</div>
+            <div class="form-section-sub">ازاي ومتى نوصله؟</div>
+          </div>
+          <span class="form-section-status">إلزامي</span>
+          <span class="form-section-chevron">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="form-section-body">
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">البريد الإلكتروني <span class="req">*</span></label>
+              <input class="input" type="email" name="channels.primaryEmail" required placeholder="name@company.com" />
+            </div>
+            <div class="field">
+              <label class="field-label">رقم الموبايل <span class="req">*</span></label>
+              <input class="input" name="channels.mobile" required placeholder="+201xxxxxxxxx" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">واتساب <span class="hint">(لو مختلف عن الموبايل)</span></label>
+              <input class="input" name="channels.whatsapp" placeholder="نفس الموبايل إن لم يُحدد" />
+            </div>
+            <div class="field">
+              <label class="field-label">LinkedIn URL</label>
+              <input class="input" name="channels.linkedinUrl" placeholder="linkedin.com/in/username" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">القناة المفضلة</label>
+              <div class="checkbox-group" id="pref-channels">
+                <label class="chip-check checked"><input type="radio" name="channels.preferredChannel" value="whatsapp" checked /> واتساب</label>
+                <label class="chip-check"><input type="radio" name="channels.preferredChannel" value="email" /> إيميل</label>
+                <label class="chip-check"><input type="radio" name="channels.preferredChannel" value="phone" /> مكالمة</label>
+              </div>
+            </div>
+            <div class="field">
+              <label class="field-label">أفضل توقيت للتواصل</label>
+              <select class="select" name="channels.bestContactTime">
+                <option value="">—</option>
+                <option value="morning">صباحاً (9-12)</option>
+                <option value="afternoon">ظهراً (12-5)</option>
+                <option value="evening">مساءً (5-10)</option>
+                <option value="anytime">أي وقت</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──────── Layer C — Context ──────── -->
+      <div class="form-section" data-section="context">
+        <div class="form-section-header">
+          <div class="form-section-num">ج</div>
+          <div>
+            <div class="form-section-title">السياق</div>
+            <div class="form-section-sub">إزاي عرفنا، وأخر مرة اتفاعلنا فيها متى؟</div>
+          </div>
+          <span class="form-section-status">اختياري</span>
+          <span class="form-section-chevron">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="form-section-body">
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">المصدر</label>
+              <select class="select" name="context.source"><option value="">—</option></select>
+            </div>
+            <div class="field">
+              <label class="field-label">تفاصيل المصدر</label>
+              <input class="input" name="context.sourceDetails" placeholder="اسم المُحيل، اسم الندوة، إلخ" />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">تاريخ أول لمسة</label>
+              <input class="input" type="date" name="context.firstTouchAt" />
+            </div>
+            <div class="field">
+              <label class="field-label">آخر تفاعل</label>
+              <input class="input" type="date" name="context.lastInteractionAt" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">الوسوم <span class="hint">(فعّل اللي ينطبق)</span></label>
+            <div class="checkbox-group" id="tags-group">
+              <label class="chip-check"><input type="checkbox" name="context.tags" value="c_level" /> C-Level</label>
+              <label class="chip-check"><input type="checkbox" name="context.tags" value="high_intent" /> اهتمام عالي</label>
+              <label class="chip-check"><input type="checkbox" name="context.tags" value="high_value" /> قيمة عالية</label>
+              <label class="chip-check"><input type="checkbox" name="context.tags" value="family_business" /> شركة عائلية</label>
+              <label class="chip-check"><input type="checkbox" name="context.tags" value="referral" /> إحالة</label>
+              <label class="chip-check"><input type="checkbox" name="context.tags" value="female_leader" /> قائدة</label>
+              <label class="chip-check"><input type="checkbox" name="context.tags" value="alumni_referral" /> إحالة خريج</label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">ملاحظات</label>
+            <textarea class="textarea" name="context.notes" placeholder="أي سياق إضافي مهم نتذكره عن جهة الاتصال دي…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──────── Layer D — EOS Profile ──────── -->
+      <div class="form-section" data-section="eosProfile">
+        <div class="form-section-header">
+          <div class="form-section-num">د</div>
+          <div>
+            <div class="form-section-title">الملف الخاص بـ EOS</div>
+            <div class="form-section-sub">إيه السقف اللي بيصطدم بيه؟ — التشخيص الأهم في النظام</div>
+          </div>
+          <span class="form-section-status">اختياري</span>
+          <span class="form-section-chevron">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="form-section-body">
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">الدور الحالي</label>
+              <select class="select" name="eosProfile.currentRole"><option value="">—</option></select>
+            </div>
+            <div class="field">
+              <label class="field-label">درجة الإلمام بـ EOS</label>
+              <select class="select" name="eosProfile.eosFamiliarity"><option value="">—</option></select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">مرحلة الشركة</label>
+              <select class="select" name="eosProfile.companyStage"><option value="">—</option></select>
+            </div>
+            <div class="field">
+              <label class="field-label">السقف اللي بيصطدم بيه</label>
+              <select class="select" name="eosProfile.ceiling"><option value="">—</option></select>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">أي مكون من الستة محتاج تركيز أعلى؟ <span class="hint">(لغة EOS من اللحظة الأولى)</span></label>
+            <div class="checkbox-group" id="comp-group">
+              <label class="chip-check"><input type="radio" name="eosProfile.primaryComponent" value="vision" /> الرؤية</label>
+              <label class="chip-check"><input type="radio" name="eosProfile.primaryComponent" value="people" /> الناس</label>
+              <label class="chip-check"><input type="radio" name="eosProfile.primaryComponent" value="data" /> البيانات</label>
+              <label class="chip-check"><input type="radio" name="eosProfile.primaryComponent" value="issues" /> القضايا</label>
+              <label class="chip-check"><input type="radio" name="eosProfile.primaryComponent" value="process" /> العمليات</label>
+              <label class="chip-check"><input type="radio" name="eosProfile.primaryComponent" value="traction" /> الإنجاز</label>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">أهداف الـ 12 شهر القادمة</label>
+            <textarea class="textarea" name="eosProfile.goals12Months" placeholder="مثال: مضاعفة الإيرادات وبناء فريق قيادة مستقل…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ──────── Layer E-I (collapsed, advanced) ──────── -->
+      <div class="form-section" data-section="advanced">
+        <div class="form-section-header">
+          <div class="form-section-num">+</div>
+          <div>
+            <div class="form-section-title">الطبقات المتقدمة (هـ، و، ز، ح، ط)</div>
+            <div class="form-section-sub">التفاعل، الفرصة، العميل النشط، النتائج، نشاط السفير — بتنبني مع تقدم الرحلة</div>
+          </div>
+          <span class="form-section-status">يدخّل لاحقاً</span>
+          <span class="form-section-chevron">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </span>
+        </div>
+        <div class="form-section-body">
+          <div style="padding: 18px; background: var(--emc-cream); border-radius: 8px; color: var(--emc-ink-2); font-size: 13.5px; line-height: 1.7;">
+            <strong>الطبقات دي مش بتتعبى في الإضافة اليدوية.</strong><br/>
+            هـ. <strong>التفاعل</strong> — بتُحسب أوتوماتيكياً من الأحداث (فتح إيميل، نقر، حضور ندوة).<br/>
+            و. <strong>الفرصة</strong> — تُملأ في صفحة التفاصيل عند الوصول للمرحلة 5 (SQL) فما فوق.<br/>
+            ز. <strong>العميل النشط</strong> — تُفعّل عند الدفع (المرحلة 10).<br/>
+            ح. <strong>النتائج</strong> — تُسجَّل بعد انتهاء البرنامج.<br/>
+            ط. <strong>نشاط السفير</strong> — تُفعّل عند أول إحالة من الخريج.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──────── Sidebar — قرار المرحلة + الـ Submit ──────── -->
+    <div style="position: sticky; top: 92px;">
+      <div class="card card-pad" style="margin-bottom: 16px;">
+        <h3 style="margin: 0 0 12px; font-size: 14px; font-weight: 700; color: var(--emc-navy); text-transform: uppercase; letter-spacing: 0.05em;">القرار التشغيلي</h3>
+
+        <div class="field">
+          <label class="field-label">المرحلة الحالية في الرحلة</label>
+          <select class="select" name="currentStage" id="stage-select"></select>
+          <div style="font-size: 12px; color: var(--emc-muted); margin-top: 6px;" id="stage-hint">—</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">المسؤول</label>
+          <select class="select" name="assignedTo">
+            <option value="abdullah">عبدالله عامر</option>
+            <option value="assistant">المساعد</option>
+            <option value="unassigned">غير مُعيَّن</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 6px;" id="submit-btn">
+          حفظ جهة الاتصال
+        </button>
+        <a href="contacts.html" class="btn btn-ghost" style="width: 100%; margin-top: 8px;">إلغاء</a>
+      </div>
+
+      <div class="card card-pad" style="background: var(--emc-cream); border-color: var(--emc-line);">
+        <h4 style="margin: 0 0 8px; font-size: 13px; color: var(--emc-navy); font-weight: 700;">💡 نصيحة</h4>
+        <div style="font-size: 12.5px; color: var(--emc-ink-2); line-height: 1.7;">
+          سجّل الطبقتين (أ) و(ب) للحد الأدنى، وحدد المصدر في (ج).
+          الطبقة (د) — EOS — هي الفارق الكبير بين سجل عادي وسجل قابل للأتمتة. لو تقدر تجمعها وقت الإدخال، اعملها.
+        </div>
+      </div>
+    </div>
+  </form>
+</template>
+
+<script>
+(async function () {
+  const main = await EMC.layout.render({ page: 'contacts' });
+  if (!main) return;
+  main.innerHTML = document.getElementById('add-tpl').innerHTML;
+
+  // ─── populate selects ───
+  const setupSelect = (name, dict) => {
+    const sel = document.querySelector(`[name="${name}"]`);
+    if (!sel) return;
+    Object.entries(dict).forEach(([k, v]) => {
+      const o = document.createElement('option');
+      o.value = k; o.textContent = v;
+      sel.appendChild(o);
+    });
+  };
+  setupSelect('identity.industry', EMC.INDUSTRIES);
+  setupSelect('identity.companySize', EMC.COMPANY_SIZES);
+  setupSelect('identity.revenueRange', EMC.REVENUE_RANGES);
+  setupSelect('identity.yearsInBusiness', EMC.YEARS_IN_BUSINESS);
+  setupSelect('context.source', EMC.SOURCES);
+  setupSelect('eosProfile.currentRole', EMC.EOS_ROLES);
+  setupSelect('eosProfile.eosFamiliarity', EMC.EOS_FAMILIARITY);
+  setupSelect('eosProfile.companyStage', EMC.COMPANY_STAGES);
+  setupSelect('eosProfile.ceiling', EMC.CEILINGS);
+
+  // stages
+  const stageSel = document.getElementById('stage-select');
+  EMC.STAGES.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.id;
+    o.textContent = `${String(s.id).padStart(2,'0')} · ${s.name}`;
+    if (s.id === 3) o.selected = true;
+    stageSel.appendChild(o);
+  });
+  const stageHint = document.getElementById('stage-hint');
+  const updateHint = () => {
+    const s = EMC.utils.getStage(parseInt(stageSel.value));
+    stageHint.textContent = s ? s.sub : '';
+  };
+  stageSel.addEventListener('change', updateHint);
+  updateHint();
+
+  // ─── collapsibles ───
+  document.querySelectorAll('.form-section-header').forEach(h => {
+    h.addEventListener('click', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'LABEL') return;
+      h.closest('.form-section').classList.toggle('open');
+    });
+  });
+
+  // ─── chip checks ───
+  document.querySelectorAll('.chip-check').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const inp = chip.querySelector('input');
+      if (inp.type === 'radio') {
+        chip.closest('.checkbox-group').querySelectorAll('.chip-check').forEach(c => c.classList.remove('checked'));
+        chip.classList.add('checked');
+        inp.checked = true;
+      } else {
+        chip.classList.toggle('checked', inp.checked);
+      }
+    });
+    // restore from input change
+    const inp = chip.querySelector('input');
+    if (inp.checked) chip.classList.add('checked');
+  });
+
+  // ─── submit ───
+  document.getElementById('add-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'جاري الحفظ…';
+
+    // build nested data
+    const data = {};
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach(inp => {
+      if (!inp.name) return;
+      let val;
+      if (inp.type === 'checkbox') {
+        if (!inp.checked) return;
+        const path = inp.name.split('.');
+        let target = data;
+        for (let i = 0; i < path.length - 1; i++) {
+          target[path[i]] = target[path[i]] || {};
+          target = target[path[i]];
+        }
+        const lastKey = path[path.length - 1];
+        target[lastKey] = target[lastKey] || [];
+        target[lastKey].push(inp.value);
+        return;
+      }
+      if (inp.type === 'radio') {
+        if (!inp.checked) return;
+        val = inp.value;
+      } else {
+        val = inp.value;
+      }
+      if (val === '') return;
+
+      const path = inp.name.split('.');
+      let target = data;
+      for (let i = 0; i < path.length - 1; i++) {
+        target[path[i]] = target[path[i]] || {};
+        target = target[path[i]];
+      }
+      target[path[path.length - 1]] = val;
+    });
+
+    // build full name
+    if (data.identity && data.identity.fullName) {
+      const parts = data.identity.fullName.trim().split(/\s+/);
+      data.identity.firstName = parts[0];
+      data.identity.lastName = parts.slice(1).join(' ');
+    }
+
+    // whatsapp fallback
+    if (data.channels && !data.channels.whatsapp && data.channels.mobile) {
+      data.channels.whatsapp = data.channels.mobile;
+    }
+
+    // first/last touch defaults
+    const today = new Date().toISOString();
+    if (data.context && !data.context.firstTouchAt) data.context.firstTouchAt = today;
+    if (data.context && !data.context.lastInteractionAt) data.context.lastInteractionAt = today;
+
+    // stage
+    data.currentStage = parseInt(form.querySelector('[name="currentStage"]').value) || 3;
+    data.assignedTo = form.querySelector('[name="assignedTo"]').value;
+
+    try {
+      const id = await EMC.contacts.create(data);
+      EMC.utils.toast('تم حفظ جهة الاتصال بنجاح', 'success');
+      setTimeout(() => window.location.href = `contact-detail.html?id=${id}`, 700);
+    } catch (err) {
+      console.error(err);
+      EMC.utils.toast('خطأ: ' + err.message, 'error');
+      btn.disabled = false;
+      btn.textContent = 'حفظ جهة الاتصال';
+    }
+  });
+})();
+</script>
+</body>
+</html>

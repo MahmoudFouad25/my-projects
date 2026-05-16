@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EMC CRM · نقطة الدخول للنظام</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/emc-styles.css" />
+<style>
+  .index-page {
+    min-height: 100vh;
+    padding: 56px 32px;
+    max-width: 1240px;
+    margin: 0 auto;
+  }
+  .pages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 18px;
+    margin-top: 28px;
+  }
+  .page-card {
+    background: #fff;
+    border: 1px solid var(--emc-line);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    transition: all 0.15s;
+    display: block;
+    color: inherit;
+    position: relative;
+  }
+  .page-card:hover {
+    border-color: var(--emc-navy);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-pop);
+  }
+  .page-card-num {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    width: 28px; height: 28px;
+    background: var(--emc-cream);
+    border: 1px solid var(--emc-line);
+    color: var(--emc-navy);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    font-size: 11px;
+  }
+  .page-card h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    color: var(--emc-navy);
+    font-weight: 700;
+  }
+  .page-card .path {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 11.5px;
+    color: var(--emc-faint);
+    margin-bottom: 12px;
+  }
+  .page-card p {
+    margin: 0;
+    color: var(--emc-muted);
+    font-size: 13.5px;
+    line-height: 1.55;
+  }
+</style>
+</head>
+<body>
+
+<div class="index-page" data-screen-label="00 Index">
+
+  <!-- ─── Header ─── -->
+  <header style="display:flex; align-items:center; justify-content:space-between; gap:24px; margin-bottom: 48px; padding-bottom: 24px; border-bottom: 1px solid var(--emc-line);">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <div style="width: 56px; height: 56px; background: var(--emc-navy); border-radius: 10px; padding: 6px;">
+        <svg width="100%" height="100%" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect x="16" y="18" width="32" height="7" rx="1" fill="#FFFFFF"/>
+          <line x1="22" y1="21.5" x2="42" y2="21.5" stroke="#D72638" stroke-width="2"/>
+          <rect x="14" y="31" width="36" height="6" rx="1" fill="#D72638"/>
+          <line x1="18" y1="25" x2="14" y2="50" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="46" y1="25" x2="50" y2="50" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="14" y1="50" x2="46" y2="25" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="11" y1="50" x2="22" y2="50" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="42" y1="50" x2="53" y2="50" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <div style="font-weight: 900; font-size: 24px; letter-spacing: 0.02em; color: var(--emc-navy);">EXECUTIVE MASTERY · CRM</div>
+        <div style="color: var(--emc-muted); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px;">Camp · MVP v0.1 — الأسبوع 0</div>
+      </div>
+    </div>
+    <a href="admin/login.html" class="btn btn-primary btn-lg">دخول النظام ←</a>
+  </header>
+
+  <!-- ─── Hero ─── -->
+  <section style="display:grid; grid-template-columns: 1.4fr 1fr; gap: 56px; align-items: flex-start; margin-bottom: 48px;">
+    <div>
+      <div style="font-size: 12.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--emc-red); font-weight: 700; margin-bottom: 14px;">
+        نقطة الدخول للعرض
+      </div>
+      <h1 style="font-size: 42px; font-weight: 800; line-height: 1.18; letter-spacing: -0.01em; margin: 0 0 18px; color: var(--emc-navy);">
+        نظام إدارة رحلة العميل لأكاديمية EMC
+      </h1>
+      <p style="font-size: 16px; line-height: 1.75; color: var(--emc-ink-2); margin: 0 0 24px;">
+        نموذج أولي شغّال للأسبوع الصفر — البنية التحتية، صفحات الإدارة الخمسة، ومعمار بيانات الـ 9 طبقات والـ 14 مرحلة. كل البيانات بتحفظ محلياً للعرض، ومتسقة مع <span class="mono" style="color: var(--emc-navy); font-weight: 600;">emc_</span> namespace في Firebase اللي عند محمود.
+      </p>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <a href="admin/login.html" class="btn btn-primary">ابدأ الجولة من الدخول</a>
+        <a href="admin/dashboard.html" class="btn btn-outline">أو ادخل الـ Dashboard مباشرة</a>
+      </div>
+
+      <div style="margin-top: 32px; padding: 16px 18px; background: #fff; border: 1px dashed var(--emc-line); border-radius: 10px;">
+        <div style="font-size: 13px; color: var(--emc-ink-2); display: flex; align-items: center; gap: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+          <strong>للدخول:</strong>
+          <span class="mono" style="color: var(--emc-navy); font-weight: 600;">abdullah@emc.academy</span>
+          <span style="color: var(--emc-faint);">·</span>
+          <span class="mono" style="color: var(--emc-navy); font-weight: 600;">demo2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spec card -->
+    <div style="background: var(--emc-navy); color: #fff; border-radius: var(--radius); padding: 28px; position: relative; overflow: hidden;">
+      <div style="position: absolute; top: -40px; left: -40px; width: 160px; height: 160px; background: rgba(215, 38, 56, 0.15); border-radius: 50%; filter: blur(20px);"></div>
+      <div style="position: relative;">
+        <div style="font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.55); font-weight: 700; margin-bottom: 16px;">
+          مواصفات الـ MVP
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div>
+            <div style="font-size: 26px; font-weight: 800;">5</div>
+            <div style="font-size: 12px; color: rgba(255,255,255,0.65);">صفحات إدارة</div>
+          </div>
+          <div>
+            <div style="font-size: 26px; font-weight: 800;">9</div>
+            <div style="font-size: 12px; color: rgba(255,255,255,0.65);">طبقات بيانات</div>
+          </div>
+          <div>
+            <div style="font-size: 26px; font-weight: 800;">14</div>
+            <div style="font-size: 12px; color: rgba(255,255,255,0.65);">مرحلة في الرحلة</div>
+          </div>
+          <div>
+            <div style="font-size: 26px; font-weight: 800; color: var(--emc-red-soft);">0$</div>
+            <div style="font-size: 12px; color: rgba(255,255,255,0.65);">تكلفة شهرية</div>
+          </div>
+        </div>
+        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 22px 0;"></div>
+        <div style="font-size: 13px; color: rgba(255,255,255,0.78); line-height: 1.7;">
+          <strong style="color: #fff;">Stack:</strong> Firebase + GitHub Pages<br/>
+          <strong style="color: #fff;">Namespace:</strong> <span class="mono">emc_*</span><br/>
+          <strong style="color: #fff;">Auth:</strong> Firebase Auth (محلي للعرض)<br/>
+          <strong style="color: #fff;">Locale:</strong> RTL · العربية
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Pages catalog ─── -->
+  <section>
+    <h2 style="font-size: 22px; font-weight: 800; color: var(--emc-navy); margin: 0 0 4px;">الصفحات في هذا الإصدار</h2>
+    <p style="color: var(--emc-muted); margin: 0;">5 صفحات تكوّن النظام كاملاً للأسبوع 0</p>
+
+    <div class="pages-grid">
+      <a class="page-card" href="admin/login.html">
+        <div class="page-card-num">01</div>
+        <h3>صفحة الدخول</h3>
+        <div class="path">/emc/admin/login.html</div>
+        <p>هوية بصرية كاملة + نموذج دخول مرتبط بـ Firebase Auth (محلي للعرض). يحفظ session ويوجّه للـ Dashboard.</p>
+      </a>
+
+      <a class="page-card" href="admin/dashboard.html">
+        <div class="page-card-num">02</div>
+        <h3>لوحة التحكم</h3>
+        <div class="path">/emc/admin/dashboard.html</div>
+        <p>الخمسة أرقام لـ "تركيز اليوم"، القمع الكامل للـ 14 مرحلة، خريطة حرارة الاهتمام، الجهات الـ Hot، آخر النشاطات.</p>
+      </a>
+
+      <a class="page-card" href="admin/contacts.html">
+        <div class="page-card-num">03</div>
+        <h3>قائمة جهات الاتصال</h3>
+        <div class="path">/emc/admin/contacts.html</div>
+        <p>تصفية بالمنطقة، المرحلة، الحرارة، المصدر، البحث الحر. تبويبات سريعة بين المناطق الأربع.</p>
+      </a>
+
+      <a class="page-card" href="admin/contact-detail.html?id=demo">
+        <div class="page-card-num">04</div>
+        <h3>تفاصيل جهة الاتصال</h3>
+        <div class="path">/emc/admin/contact-detail.html</div>
+        <p>الـ 9 طبقات في تبويبات منفصلة، شريط رحلة الـ 14 مرحلة، السجل الزمني، الخطوة التالية المقترحة.</p>
+      </a>
+
+      <a class="page-card" href="admin/add-contact.html">
+        <div class="page-card-num">05</div>
+        <h3>إضافة جهة اتصال</h3>
+        <div class="path">/emc/admin/add-contact.html</div>
+        <p>نموذج متعدد الأقسام قابل للطي — أ، ب، ج، د عبر سياقات مهيكلة. الطبقات المتقدمة هـ-ط تتعبى لاحقاً.</p>
+      </a>
+    </div>
+  </section>
+
+  <!-- ─── What's in the data layer ─── -->
+  <section style="margin-top: 56px;">
+    <h2 style="font-size: 22px; font-weight: 800; color: var(--emc-navy); margin: 0 0 4px;">معمار البيانات</h2>
+    <p style="color: var(--emc-muted); margin: 0 0 18px;">كل Collections بـ <span class="mono" style="color: var(--emc-navy); font-weight: 600;">emc_</span> prefix علشان متختلطش مع منظور الفؤاد</p>
+
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
+      <div class="card card-pad-sm">
+        <div class="mono" style="font-size: 11.5px; color: var(--emc-red); font-weight: 700; margin-bottom: 4px;">emc_contacts</div>
+        <div style="font-size: 13.5px; color: var(--emc-ink-2);">ملف العميل بالطبقات الـ 9</div>
+      </div>
+      <div class="card card-pad-sm">
+        <div class="mono" style="font-size: 11.5px; color: var(--emc-red); font-weight: 700; margin-bottom: 4px;">emc_events</div>
+        <div style="font-size: 13.5px; color: var(--emc-ink-2);">سجل كل تفاعل وتغيير</div>
+      </div>
+      <div class="card card-pad-sm">
+        <div class="mono" style="font-size: 11.5px; color: var(--emc-red); font-weight: 700; margin-bottom: 4px;">emc_cohorts</div>
+        <div style="font-size: 13.5px; color: var(--emc-ink-2);">الكوهورتات الدراسية</div>
+      </div>
+      <div class="card card-pad-sm">
+        <div class="mono" style="font-size: 11.5px; color: var(--emc-red); font-weight: 700; margin-bottom: 4px;">emc_templates</div>
+        <div style="font-size: 13.5px; color: var(--emc-ink-2);">قوالب الإيميل والواتساب</div>
+      </div>
+      <div class="card card-pad-sm">
+        <div class="mono" style="font-size: 11.5px; color: var(--emc-red); font-weight: 700; margin-bottom: 4px;">emc_admins</div>
+        <div style="font-size: 13.5px; color: var(--emc-ink-2);">مدراء النظام والصلاحيات</div>
+      </div>
+      <div class="card card-pad-sm" style="opacity: 0.55;">
+        <div class="mono" style="font-size: 11.5px; color: var(--emc-faint); font-weight: 700; margin-bottom: 4px;">emc_opportunities</div>
+        <div style="font-size: 13.5px; color: var(--emc-muted);">قريباً — الأسبوع 5</div>
+      </div>
+      <div class="card card-pad-sm" style="opacity: 0.55;">
+        <div class="mono" style="font-size: 11.5px; color: var(--emc-faint); font-weight: 700; margin-bottom: 4px;">emc_automations</div>
+        <div style="font-size: 13.5px; color: var(--emc-muted);">قريباً — الأسبوع 4+</div>
+      </div>
+      <div class="card card-pad-sm" style="opacity: 0.55;">
+        <div class="mono" style="font-size: 11.5px; color: var(--emc-faint); font-weight: 700; margin-bottom: 4px;">emc_referrals</div>
+        <div style="font-size: 13.5px; color: var(--emc-muted);">قريباً — الأسبوع 14</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Roadmap ─── -->
+  <section style="margin-top: 56px;">
+    <h2 style="font-size: 22px; font-weight: 800; color: var(--emc-navy); margin: 0 0 4px;">خارطة الطريق — 14 أسبوع</h2>
+    <p style="color: var(--emc-muted); margin: 0 0 18px;">كل أسبوع = مرحلة من رحلة العميل مؤتمتة بالكامل</p>
+
+    <div class="card card-pad">
+      <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; font-size: 12px;">
+        <div style="padding: 14px 12px; background: var(--emc-success); color: #fff; border-radius: 8px;">
+          <div style="font-weight: 800; font-size: 14px;">✓ أسبوع 0</div>
+          <div style="opacity: 0.85; margin-top: 4px;">الأساس · أنت هنا</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-navy);">1 · المراقب</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">شرائح الجمهور</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-navy);">2 · المتفاعل</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">تتبع المصادر</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-navy);">3 · المُعرَّف</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">Form A + سلسلة ترحيب</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-navy);">4 · MQL</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">Engagement Engine</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-navy);">5 · SQL</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">Form B التأهيل</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-navy);">6 · Discovery</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">Calendly + سكريبت</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-navy);">7 · Proposal</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">عرض مخصص</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-navy);">8 · Negotiation</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">شجرة الاعتراضات</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-navy);">9 · Decision</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">Won/Lost</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-gold);">10 · Onboarding</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">استبيان التشخيص</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-gold);">11 · Participation</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">تتبع الحضور</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-gold);">12 · Implementation</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">Check-ins الخمسة</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-red);">13 · Alumni</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">برنامج الخريج + NPS</div>
+        </div>
+        <div style="padding: 14px 12px; background: var(--emc-cream); border: 1px solid var(--emc-line); border-radius: 8px;">
+          <div style="font-weight: 700; color: var(--emc-red);">14 · Advocate</div>
+          <div style="color: var(--emc-muted); margin-top: 4px;">برنامج السفير</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Footer ─── -->
+  <footer style="margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--emc-line); display: flex; justify-content: space-between; color: var(--emc-faint); font-size: 12.5px;">
+    <div>EMC CRM · MVP الأسبوع 0 · مايو 2026</div>
+    <div>بُني خصيصاً لـ <strong style="color: var(--emc-navy);">Abdullah Amer · Executive Mastery Camp</strong></div>
+  </footer>
+</div>
+
+</body>
+</html>

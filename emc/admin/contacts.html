@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>جهات الاتصال · EMC CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../css/emc-styles.css" />
+<script src="../js/emc-firebase.js"></script>
+<script src="../js/emc-utils.js"></script>
+<script src="../js/emc-contacts.js"></script>
+<script src="../js/emc-layout.js"></script>
+</head>
+<body data-screen-label="03 Contacts list">
+
+<div id="emc-shell-root"></div>
+
+<template id="contacts-tpl">
+  <div class="emc-crumbs">
+    <a href="dashboard.html">لوحة التحكم</a>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    <span>جهات الاتصال</span>
+  </div>
+
+  <div class="emc-page-head">
+    <div>
+      <h1 class="emc-page-title">جهات الاتصال</h1>
+      <div class="emc-page-sub" id="result-meta">جاري التحميل…</div>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-outline" id="export-btn">⤓ تصدير CSV</button>
+      <a href="add-contact.html" class="btn btn-primary">+ إضافة جهة اتصال</a>
+    </div>
+  </div>
+
+  <!-- ─── شريط منطقة ─── -->
+  <div class="card card-pad" style="margin-bottom: 16px; padding: 16px 18px;">
+    <div style="display:flex; align-items:center; gap: 4px; flex-wrap: wrap;" id="zone-tabs"></div>
+  </div>
+
+  <!-- ─── فلاتر ─── -->
+  <div class="filter-bar">
+    <div class="search-mini">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.6" y2="16.6"/></svg>
+      <input class="input" id="filter-search" placeholder="ابحث بالاسم، الشركة، أو المنصب…" />
+    </div>
+    <select class="select" id="filter-stage">
+      <option value="">كل المراحل</option>
+    </select>
+    <select class="select" id="filter-temperature">
+      <option value="">كل درجات الحرارة</option>
+      <option value="burning">🔥 مشتعل (81+)</option>
+      <option value="hot">حار (61-80)</option>
+      <option value="warm">دافئ (31-60)</option>
+      <option value="cold">بارد (0-30)</option>
+    </select>
+    <select class="select" id="filter-source">
+      <option value="">كل المصادر</option>
+    </select>
+    <button class="btn btn-ghost btn-sm" id="clear-filters">مسح الفلاتر</button>
+  </div>
+
+  <!-- ─── الجدول ─── -->
+  <div class="card" style="overflow: hidden;">
+    <table class="emc-table">
+      <thead>
+        <tr>
+          <th>جهة الاتصال</th>
+          <th>الشركة</th>
+          <th>المرحلة</th>
+          <th>الحرارة</th>
+          <th>مصدر</th>
+          <th>القيمة المتوقعة</th>
+          <th>آخر تفاعل</th>
+        </tr>
+      </thead>
+      <tbody id="contacts-tbody">
+        <tr><td colspan="7" class="empty">جاري التحميل…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</template>
+
+<script>
+(async function () {
+  const main = await EMC.layout.render({ page: 'contacts' });
+  if (!main) return;
+  await EMC.seedIfEmpty();
+
+  main.innerHTML = document.getElementById('contacts-tpl').innerHTML;
+
+  // ─── URL params ───
+  const params = new URLSearchParams(window.location.search);
+  const initial = {
+    zone: params.get('zone') ? parseInt(params.get('zone')) : null,
+    stage: params.get('stage') ? parseInt(params.get('stage')) : null,
+    temperature: params.get('temperature') || '',
+    source: params.get('source') || '',
+    search: params.get('search') || ''
+  };
+
+  // ─── Zone tabs ───
+  const zoneNames = {
+    null: { label: 'الكل', sub: 'كل جهات الاتصال', color: 'var(--emc-navy)' },
+    1: { label: 'منطقة 1 · العملاء المحتملون', sub: 'Suspect → MQL', color: '#6B8FB5' },
+    2: { label: 'منطقة 2 · إدارة الفرص', sub: 'SQL → Decision', color: 'var(--emc-navy)' },
+    3: { label: 'منطقة 3 · العملاء النشطون', sub: 'Onboarding → Implementation', color: 'var(--emc-gold)' },
+    4: { label: 'منطقة 4 · الانتماء والإحالة', sub: 'Alumni → Advocate', color: 'var(--emc-red)' }
+  };
+  const stats = await EMC.contacts.stats();
+  const zoneTabs = document.getElementById('zone-tabs');
+  const zoneOptions = [null, 1, 2, 3, 4];
+  zoneTabs.innerHTML = zoneOptions.map(zid => {
+    const z = zoneNames[zid];
+    const count = zid === null ? stats.total : stats.byZone[zid];
+    const isActive = (initial.zone === zid) || (initial.zone === null && zid === null);
+    return `
+      <button class="zone-tab" data-zone="${zid === null ? '' : zid}" style="
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 10px 16px;
+        background: ${isActive ? 'var(--emc-navy)' : 'transparent'};
+        color: ${isActive ? '#fff' : 'var(--emc-ink-2)'};
+        border: 0;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 13.5px;
+        cursor: pointer;
+        transition: all 0.15s;
+      ">
+        <span>${z.label}</span>
+        <span style="
+          padding: 2px 8px; border-radius: 99px; font-size: 11.5px;
+          background: ${isActive ? 'rgba(255,255,255,0.18)' : 'var(--emc-cream)'};
+          color: ${isActive ? '#fff' : 'var(--emc-ink-2)'};
+          border: 1px solid ${isActive ? 'rgba(255,255,255,0.1)' : 'var(--emc-line)'};
+          font-weight: 700; font-variant-numeric: tabular-nums;
+        ">${count}</span>
+      </button>
+    `;
+  }).join('');
+
+  zoneTabs.querySelectorAll('.zone-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const z = btn.dataset.zone;
+      const url = new URL(window.location.href);
+      if (z) url.searchParams.set('zone', z);
+      else url.searchParams.delete('zone');
+      url.searchParams.delete('stage');
+      window.location.href = url.toString();
+    });
+  });
+
+  // ─── Stage filter options ───
+  const stageSelect = document.getElementById('filter-stage');
+  EMC.STAGES.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = `${String(s.id).padStart(2,'0')} · ${s.name}`;
+    if (initial.stage === s.id) opt.selected = true;
+    stageSelect.appendChild(opt);
+  });
+
+  // ─── Source filter ───
+  const sourceSelect = document.getElementById('filter-source');
+  Object.entries(EMC.SOURCES).forEach(([k, v]) => {
+    const opt = document.createElement('option');
+    opt.value = k; opt.textContent = v;
+    if (initial.source === k) opt.selected = true;
+    sourceSelect.appendChild(opt);
+  });
+
+  // ─── Initial values ───
+  document.getElementById('filter-search').value = initial.search;
+  document.getElementById('filter-temperature').value = initial.temperature;
+
+  // ─── Apply filters ───
+  const applyFilters = async () => {
+    const filters = {
+      zone: initial.zone,
+      stage: parseInt(stageSelect.value) || null,
+      temperature: document.getElementById('filter-temperature').value || null,
+      source: sourceSelect.value || null,
+      search: document.getElementById('filter-search').value
+    };
+    Object.keys(filters).forEach(k => { if (!filters[k]) delete filters[k]; });
+
+    const docs = await EMC.contacts.list(filters);
+    renderTable(docs);
+    document.getElementById('result-meta').textContent =
+      `${docs.length} جهة اتصال · ${initial.zone ? zoneNames[initial.zone].label : 'كل المناطق'}`;
+  };
+
+  function renderTable(docs) {
+    const tbody = document.getElementById('contacts-tbody');
+    if (!docs.length) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="color: var(--emc-faint); margin-bottom: 6px;"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.6" y2="16.6"/></svg>
+        <h3>لا توجد نتائج</h3>
+        <div>جرّب تغيير الفلاتر أو امسحها</div>
+      </td></tr>`;
+      return;
+    }
+    tbody.innerHTML = docs.map(c => {
+      const stage = EMC.utils.getStage(c.currentStage);
+      const temp = c.engagement?.temperature || 'cold';
+      const sourceLabel = EMC.SOURCES[c.context?.source] || '—';
+      return `
+        <tr onclick="window.location.href='contact-detail.html?id=${c.id}'">
+          <td>
+            <div class="contact-cell">
+              <div class="contact-avatar" style="background:${EMC.utils.avatarColor(c.identity.fullName)}">${EMC.utils.initials(c.identity.fullName)}</div>
+              <div>
+                <div class="contact-name">${c.identity.fullName}</div>
+                <div class="contact-meta">${c.identity.title || '—'}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div style="font-weight: 600;">${c.identity.companyName || '—'}</div>
+            <div class="contact-meta">${EMC.INDUSTRIES[c.identity.industry] || '—'} · ${EMC.COMPANY_SIZES[c.identity.companySize] || '—'}</div>
+          </td>
+          <td><span class="badge badge-stage">${String(stage.id).padStart(2,'0')} · ${stage.name}</span></td>
+          <td><span class="badge badge-heat-${temp}"><span class="heat-dot ${temp}"></span>${EMC.utils.temperatureLabel(temp)} · ${c.engagement?.engagementScore || 0}</span></td>
+          <td>${sourceLabel}</td>
+          <td><strong style="font-variant-numeric: tabular-nums;">${EMC.utils.formatCurrency(c.opportunity?.expectedValue || 0)}</strong></td>
+          <td style="color: var(--emc-muted); font-size: 13px;">${EMC.utils.formatDate(c.context?.lastInteractionAt || c.createdAt, { relative: true })}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  document.getElementById('filter-search').addEventListener('input', debounce(applyFilters, 200));
+  document.getElementById('filter-stage').addEventListener('change', applyFilters);
+  document.getElementById('filter-temperature').addEventListener('change', applyFilters);
+  document.getElementById('filter-source').addEventListener('change', applyFilters);
+  document.getElementById('clear-filters').addEventListener('click', () => {
+    window.location.href = 'contacts.html';
+  });
+  document.getElementById('export-btn').addEventListener('click', () => {
+    EMC.utils.toast('قريباً — تصدير CSV', 'default');
+  });
+
+  function debounce(fn, ms) {
+    let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
+  }
+
+  applyFilters();
+})();
+</script>
+</body>
+</html>

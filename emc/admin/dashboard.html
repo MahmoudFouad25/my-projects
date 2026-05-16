@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>لوحة التحكم · EMC CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../css/emc-styles.css" />
+<script src="../js/emc-firebase.js"></script>
+<script src="../js/emc-utils.js"></script>
+<script src="../js/emc-contacts.js"></script>
+<script src="../js/emc-layout.js"></script>
+</head>
+<body data-screen-label="02 Dashboard">
+
+<div id="emc-shell-root"></div>
+
+<template id="dashboard-tpl">
+  <div class="emc-crumbs">
+    <span>EMC CRM</span>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    <span>لوحة التحكم</span>
+  </div>
+
+  <div class="emc-page-head">
+    <div>
+      <h1 class="emc-page-title">صباح الخير يا عبدالله</h1>
+      <div class="emc-page-sub" id="today-date"></div>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <a href="contacts.html" class="btn btn-outline">عرض كل جهات الاتصال</a>
+      <a href="add-contact.html" class="btn btn-primary">+ إضافة جهة اتصال</a>
+    </div>
+  </div>
+
+  <!-- ─── الـ 5 أرقام اللي عبدالله بيبصلها كل صبح ─── -->
+  <div style="margin-bottom: 28px;">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom: 14px;">
+      <div style="width:4px; height:18px; background:var(--emc-red); border-radius:2px;"></div>
+      <h2 style="margin:0; font-size: 15px; font-weight: 700; color: var(--emc-navy);">تركيز اليوم — الخمسة أرقام</h2>
+      <span class="muted" style="font-size: 12.5px;">القرارات اللي محتاج تاخدها قبل ما تبدأ يومك</span>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap: 12px;" id="focus-five"></div>
+  </div>
+
+  <!-- ─── الصف الرئيسي ─── -->
+  <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap: 22px; margin-bottom: 22px;">
+
+    <!-- يسار: الـ Funnel -->
+    <div class="card card-pad">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: 18px;">
+        <div>
+          <h3 style="margin: 0; font-size: 17px; color: var(--emc-navy); font-weight: 700;">القمع — توزيع جهات الاتصال على المراحل الـ 14</h3>
+          <div style="font-size: 12.5px; color: var(--emc-muted); margin-top: 2px;">من المراقب إلى السفير · أربع مناطق</div>
+        </div>
+        <a href="contacts.html" style="font-size: 12.5px; font-weight: 600; color: var(--emc-navy);">عرض الكل ←</a>
+      </div>
+
+      <div id="funnel-zones"></div>
+    </div>
+
+    <!-- يمين: نشاط حديث + توزيع حراري -->
+    <div style="display:flex; flex-direction:column; gap: 22px;">
+      <div class="card card-pad">
+        <h3 style="margin: 0 0 14px; font-size: 16px; color: var(--emc-navy); font-weight: 700;">حرارة الاهتمام</h3>
+        <div id="heat-distribution"></div>
+        <div style="margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--emc-line-soft); font-size: 12.5px; color: var(--emc-muted); display:flex; align-items:flex-start; gap:8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+          <span>الـ <strong style="color:var(--emc-red);">المشتعلون</strong> يحتاجون مكالمة شخصية منك خلال 48 ساعة.</span>
+        </div>
+      </div>
+
+      <div class="card card-pad" style="background: linear-gradient(135deg, var(--emc-navy), var(--emc-navy-soft)); color: #fff; border: 0;">
+        <div style="font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.6); font-weight: 700; margin-bottom: 6px;">القيمة المتوقعة في الأنبوب</div>
+        <div style="font-size: 36px; font-weight: 800; font-variant-numeric: tabular-nums;" id="pipeline-value">—</div>
+        <div style="font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 4px;" id="pipeline-meta">—</div>
+        <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 18px 0;"></div>
+        <div style="display:flex; justify-content:space-between; font-size: 13px;">
+          <div>
+            <div style="color: rgba(255,255,255,0.6); font-size: 12px;">متوسط نقاط التفاعل</div>
+            <div style="font-weight: 700; font-size: 22px; margin-top: 4px;" id="avg-score">—</div>
+          </div>
+          <div>
+            <div style="color: rgba(255,255,255,0.6); font-size: 12px;">الكوهورت القادم</div>
+            <div style="font-weight: 700; font-size: 22px; margin-top: 4px;">يونيو 26</div>
+          </div>
+          <div>
+            <div style="color: rgba(255,255,255,0.6); font-size: 12px;">المقاعد المتبقية</div>
+            <div style="font-weight: 700; font-size: 22px; margin-top: 4px;">5 / 12</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── جدول الجهات الحارة + نشاط ─── -->
+  <div style="display:grid; grid-template-columns: 1.4fr 1fr; gap: 22px;">
+    <div class="card">
+      <div style="padding: 18px 22px; border-bottom: 1px solid var(--emc-line); display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <h3 style="margin:0; font-size: 16px; color: var(--emc-navy); font-weight: 700;">الجهات المُلِحّة هذا الأسبوع</h3>
+          <div style="font-size: 12.5px; color: var(--emc-muted); margin-top: 2px;">Hot / Burning + جاهزة لإجراء فوري</div>
+        </div>
+        <a href="contacts.html?temperature=hot" style="font-size: 12.5px; font-weight: 600; color: var(--emc-navy);">الكل ←</a>
+      </div>
+      <table class="emc-table" id="hot-table">
+        <thead>
+          <tr>
+            <th>جهة الاتصال</th>
+            <th>المرحلة</th>
+            <th>الحرارة</th>
+            <th>قيمة متوقعة</th>
+            <th>الخطوة التالية</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card card-pad">
+      <h3 style="margin: 0 0 16px; font-size: 16px; color: var(--emc-navy); font-weight: 700;">آخر النشاطات</h3>
+      <div class="timeline" id="recent-timeline"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+(async function () {
+  const main = await EMC.layout.render({ page: 'dashboard' });
+  if (!main) return;
+
+  await EMC.seedIfEmpty();
+  main.innerHTML = document.getElementById('dashboard-tpl').innerHTML;
+
+  // تاريخ اليوم بالعربي
+  const today = new Date();
+  const days = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  document.getElementById('today-date').textContent =
+    `${days[today.getDay()]}، ${EMC.utils.formatDate(today.toISOString())} · لمحة سريعة عن النظام`;
+
+  const stats = await EMC.contacts.stats();
+  const allContacts = await EMC.contacts.list();
+
+  // الـ 5 أرقام
+  const inProposal = allContacts.filter(c => c.currentStage === 7 || c.currentStage === 8).length;
+  const stalled = allContacts.filter(c => {
+    if (c.currentStage >= 9) return false;
+    const last = c.context?.lastInteractionAt;
+    if (!last) return false;
+    const days = (Date.now() - new Date(last).getTime()) / 86400000;
+    return days > 14;
+  }).length;
+  const activeStudents = allContacts.filter(c => c.currentStage >= 10 && c.currentStage <= 12).length;
+  const monthRefs = allContacts.reduce((s, c) => s + (c.advocacy?.referralsCount || 0), 0);
+  const bookedThisWeek = 3; // demo
+
+  const focusFive = [
+    { label: 'مكالمات محجوزة هذا الأسبوع', value: bookedThisWeek, sub: '+1 عن الأسبوع السابق', color: 'navy', icon: '📞' },
+    { label: 'في مرحلة العرض', value: inProposal, sub: 'محتاجة متابعة', color: 'red', icon: '📄' },
+    { label: 'فرص راكدة +14 يوم', value: stalled, sub: stalled > 0 ? 'محتاج تدخل' : 'كله جاري', color: 'warn', icon: '⏱️' },
+    { label: 'خريجون في تطبيق نشط', value: activeStudents, sub: 'متابعة مجدولة', color: 'gold', icon: '🎯' },
+    { label: 'إحالات هذا الشهر', value: monthRefs, sub: '+30٪ مقارنة بالشهر السابق', color: 'success', icon: '↪︎' }
+  ];
+
+  document.getElementById('focus-five').innerHTML = focusFive.map(f => `
+    <div class="stat-card accent-${f.color === 'red' ? 'red' : f.color === 'gold' ? 'gold' : f.color === 'success' ? 'success' : 'navy'}">
+      <div class="stat-label">${f.label}</div>
+      <div style="display:flex; align-items:baseline; gap: 8px;">
+        <div class="stat-value">${EMC.utils.formatNumber(f.value)}</div>
+        <span style="font-size: 18px; opacity: 0.55;">${f.icon}</span>
+      </div>
+      <div class="stat-meta">${f.sub}</div>
+    </div>
+  `).join('');
+
+  // الـ Funnel — مجمّع بالمناطق
+  const zones = [
+    { id: 1, name: 'إدارة العملاء المحتملين', accent: false, range: [1, 4] },
+    { id: 2, name: 'إدارة الفرص', accent: true,  range: [5, 9] },
+    { id: 3, name: 'دورة حياة العميل', accent: false, range: [10, 12] },
+    { id: 4, name: 'الانتماء والإحالة', accent: false, range: [13, 14] }
+  ];
+  const totalContacts = Math.max(stats.total, 1);
+  const max = Math.max(...Object.values(stats.byStage));
+  const maxSafe = Math.max(max, 1);
+
+  const funnelHtml = zones.map(z => {
+    const rows = EMC.STAGES.filter(s => s.zone === z.id).map(s => {
+      const count = stats.byStage[s.id] || 0;
+      const pct = totalContacts ? Math.round((count / totalContacts) * 100) : 0;
+      const widthPct = Math.max(5, (count / maxSafe) * 100);
+      return `
+        <div class="funnel-row">
+          <div class="funnel-stage">${String(s.id).padStart(2, '0')}</div>
+          <div>
+            <div class="funnel-name">${s.name}</div>
+            <div class="funnel-bar ${z.accent ? 'accent' : ''}">
+              <div style="width: ${widthPct}%; ${count === 0 ? 'background: var(--emc-line); color: var(--emc-muted);' : ''}">${count > 0 ? count : ''}</div>
+            </div>
+          </div>
+          <div class="funnel-pct">${pct}%</div>
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div style="margin-bottom: 22px;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+          <span class="mono" style="font-size: 11px; color: var(--emc-faint);">منطقة ${z.id}</span>
+          <span style="font-weight: 700; font-size: 13.5px; color: var(--emc-ink-2);">${z.name}</span>
+        </div>
+        ${rows}
+      </div>
+    `;
+  }).join('');
+  document.getElementById('funnel-zones').innerHTML = funnelHtml;
+
+  // Heat distribution
+  const heat = stats.byTemp;
+  const heatTotal = Math.max(heat.cold + heat.warm + heat.hot + heat.burning, 1);
+  document.getElementById('heat-distribution').innerHTML = `
+    <div style="display: flex; height: 12px; border-radius: 99px; overflow: hidden; margin-bottom: 14px; background: var(--emc-line-soft);">
+      <div style="flex: ${heat.cold}; background: var(--heat-cold);" title="بارد"></div>
+      <div style="flex: ${heat.warm}; background: var(--heat-warm);" title="دافئ"></div>
+      <div style="flex: ${heat.hot}; background: var(--heat-hot);" title="حار"></div>
+      <div style="flex: ${heat.burning}; background: var(--heat-burning);" title="مشتعل"></div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; font-size: 13px;">
+      <div style="display:flex; align-items:center; gap:8px;"><span class="heat-dot cold"></span> بارد · ${heat.cold}</div>
+      <div style="display:flex; align-items:center; gap:8px;"><span class="heat-dot warm"></span> دافئ · ${heat.warm}</div>
+      <div style="display:flex; align-items:center; gap:8px;"><span class="heat-dot hot"></span> حار · ${heat.hot}</div>
+      <div style="display:flex; align-items:center; gap:8px;"><span class="heat-dot burning"></span> مشتعل · ${heat.burning}</div>
+    </div>
+  `;
+
+  // Pipeline value
+  document.getElementById('pipeline-value').textContent = EMC.utils.formatCurrency(stats.totalOppValue);
+  const oppCount = allContacts.filter(c => c.opportunity?.expectedValue > 0).length;
+  document.getElementById('pipeline-meta').textContent = `موزّعة على ${oppCount} فرصة نشطة`;
+  document.getElementById('avg-score').textContent = stats.avgScore;
+
+  // Hot contacts table
+  const hot = allContacts
+    .filter(c => ['hot', 'burning'].includes(c.engagement?.temperature))
+    .slice(0, 5);
+  const nextStepHints = {
+    5: 'حدد موعد مكالمة استكشاف',
+    6: 'متابعة بعد المكالمة',
+    7: 'تأكد من استلام العرض',
+    8: 'عالج الاعتراضات المتبقية',
+    13: 'اطلب شهادة أو إحالة'
+  };
+  document.querySelector('#hot-table tbody').innerHTML = hot.map(c => {
+    const stage = EMC.utils.getStage(c.currentStage);
+    const temp = c.engagement?.temperature || 'cold';
+    return `
+      <tr onclick="window.location.href='contact-detail.html?id=${c.id}'">
+        <td>
+          <div class="contact-cell">
+            <div class="contact-avatar" style="background:${EMC.utils.avatarColor(c.identity.fullName)}">${EMC.utils.initials(c.identity.fullName)}</div>
+            <div>
+              <div class="contact-name">${c.identity.fullName}</div>
+              <div class="contact-meta">${c.identity.title} · ${c.identity.companyName}</div>
+            </div>
+          </div>
+        </td>
+        <td><span class="badge badge-stage">${String(stage.id).padStart(2,'0')} · ${stage.name}</span></td>
+        <td><span class="badge badge-heat-${temp}"><span class="heat-dot ${temp}"></span>${EMC.utils.temperatureLabel(temp)} · ${c.engagement.engagementScore}</span></td>
+        <td><strong>${EMC.utils.formatCurrency(c.opportunity?.expectedValue || 0)}</strong></td>
+        <td style="color: var(--emc-ink-2); font-size: 13px;">${nextStepHints[c.currentStage] || '—'}</td>
+      </tr>
+    `;
+  }).join('') || `<tr><td colspan="5" class="empty"><h3>مفيش جهات حارة حالياً</h3>كل الجهات في حالة هادئة</td></tr>`;
+
+  // Recent timeline
+  const recentEvents = await EMC.events.listRecent(8);
+  const eventDesc = (ev) => {
+    if (ev.type === 'stage_change') {
+      const fromStage = EMC.utils.getStage(ev.data.from);
+      const toStage = EMC.utils.getStage(ev.data.to);
+      return `انتقل من <strong>${fromStage?.name || '—'}</strong> إلى <strong>${toStage?.name || '—'}</strong>`;
+    }
+    if (ev.type === 'manual_note') return `تم ${ev.data?.action === 'created' ? 'إضافة' : 'تحديث'} <strong>${ev.data?.name || 'جهة اتصال'}</strong>`;
+    return ev.type;
+  };
+  const tlHtml = recentEvents.map(ev => {
+    const color = ev.type === 'stage_change' ? 'gold' : 'red';
+    return `
+      <div class="timeline-item">
+        <div class="timeline-dot ${color}"></div>
+        <div class="timeline-content">
+          <div class="timeline-title">${eventDesc(ev)}</div>
+          <div class="timeline-meta">${EMC.utils.formatDate(ev.timestamp, { relative: true })} · ${ev.performedBy}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('recent-timeline').innerHTML = tlHtml || `<div class="empty"><h3>لا توجد نشاطات بعد</h3></div>`;
+})();
+</script>
+</body>
+</html>

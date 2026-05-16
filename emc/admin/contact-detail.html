@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>تفاصيل جهة الاتصال · EMC CRM</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../css/emc-styles.css" />
+<script src="../js/emc-firebase.js"></script>
+<script src="../js/emc-utils.js"></script>
+<script src="../js/emc-contacts.js"></script>
+<script src="../js/emc-layout.js"></script>
+<style>
+  /* Detail-specific */
+  .detail-hero {
+    background: #fff;
+    border: 1px solid var(--emc-line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 22px;
+  }
+  .detail-hero-top {
+    padding: 22px 26px;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    border-bottom: 1px solid var(--emc-line);
+  }
+  .detail-avatar-lg {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    color: #fff;
+    display: grid; place-items: center;
+    font-weight: 800;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .detail-name { font-size: 24px; font-weight: 800; color: var(--emc-navy); margin: 0; }
+  .detail-sub { color: var(--emc-muted); font-size: 14px; margin-top: 2px; }
+  .detail-tag-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+  .layer-card {
+    background: #fff;
+    border: 1px solid var(--emc-line);
+    border-radius: var(--radius);
+    padding: 22px 26px;
+    margin-bottom: 16px;
+  }
+  .layer-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--emc-line-soft);
+  }
+  .layer-letter {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--emc-navy);
+    color: #fff;
+    display: grid; place-items: center;
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 700;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .layer-title { font-size: 16px; font-weight: 700; color: var(--emc-navy); margin: 0; }
+  .layer-question { color: var(--emc-muted); font-size: 12.5px; margin-top: 2px; }
+
+  .field-display {
+    margin-bottom: 14px;
+  }
+  .field-display .key {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--emc-muted);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .field-display .val {
+    font-size: 14px;
+    color: var(--emc-ink);
+    font-weight: 500;
+  }
+  .field-display .val.empty { color: var(--emc-faint); font-style: italic; font-weight: 400; }
+
+  .meter {
+    height: 6px;
+    background: var(--emc-line-soft);
+    border-radius: 99px;
+    overflow: hidden;
+    margin: 6px 0 2px;
+  }
+  .meter > div {
+    height: 100%;
+    background: var(--emc-navy);
+    border-radius: 99px;
+    transition: width 0.4s;
+  }
+  .meter > div.gold { background: var(--emc-gold); }
+  .meter > div.red { background: var(--emc-red); }
+  .meter > div.success { background: var(--emc-success); }
+</style>
+</head>
+<body data-screen-label="04 Contact detail">
+
+<div id="emc-shell-root"></div>
+
+<template id="detail-tpl">
+  <div class="emc-crumbs">
+    <a href="dashboard.html">لوحة التحكم</a>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    <a href="contacts.html">جهات الاتصال</a>
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    <span id="crumb-name">…</span>
+  </div>
+
+  <div id="detail-content"></div>
+</template>
+
+<script>
+(async function () {
+  const main = await EMC.layout.render({ page: 'contacts' });
+  if (!main) return;
+  await EMC.seedIfEmpty();
+
+  main.innerHTML = document.getElementById('detail-tpl').innerHTML;
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (!id) {
+    document.getElementById('detail-content').innerHTML = `<div class="empty"><h3>لا توجد جهة اتصال محددة</h3><a href="contacts.html" class="btn btn-primary" style="margin-top:14px;">عرض كل جهات الاتصال</a></div>`;
+    return;
+  }
+
+  const c = await EMC.contacts.get(id);
+  if (!c) {
+    document.getElementById('detail-content').innerHTML = `<div class="empty"><h3>جهة الاتصال غير موجودة</h3></div>`;
+    return;
+  }
+
+  document.getElementById('crumb-name').textContent = c.identity.fullName;
+  document.title = `${c.identity.fullName} · EMC CRM`;
+
+  const stage = EMC.utils.getStage(c.currentStage);
+  const temp = c.engagement?.temperature || 'cold';
+  const tempLabel = EMC.utils.temperatureLabel(temp);
+  const events = await EMC.events.listForContact(id);
+
+  // ─── Layers definition ───
+  const layers = [
+    { letter: 'أ', code: 'identity',   title: 'الهوية الأساسية', q: 'مين هو وفي أنهي شركة؟' },
+    { letter: 'ب', code: 'channels',   title: 'قنوات التواصل',   q: 'ازاي ومتى نوصله؟' },
+    { letter: 'ج', code: 'context',    title: 'السياق',          q: 'إزاي عرفنا، وأخر مرة اتفاعلنا فيها متى؟' },
+    { letter: 'د', code: 'eosProfile', title: 'الملف الخاص بـ EOS', q: 'إيه السقف اللي بيصطدم بيه؟' },
+    { letter: 'هـ',code: 'engagement', title: 'التفاعل والاهتمام', q: 'قد إيه ساخن دلوقتي؟' },
+    { letter: 'و', code: 'opportunity',title: 'الفرصة',          q: 'إيه قيمتها واحتمالية الإغلاق؟' },
+    { letter: 'ز', code: 'customer',   title: 'العميل النشط',    q: 'لو سجّل، تقدمه إزاي في الدورة؟' },
+    { letter: 'ح', code: 'outcomes',   title: 'النتائج والأثر',  q: 'البرنامج عمل إيه له فعلاً؟' },
+    { letter: 'ط', code: 'advocacy',   title: 'نشاط السفير',    q: 'بيُحيل قد إيه؟' }
+  ];
+
+  // ─── Build hero ───
+  const root = document.getElementById('detail-content');
+  root.innerHTML = `
+    <!-- HERO -->
+    <div class="detail-hero">
+      <div class="detail-hero-top">
+        <div class="detail-avatar-lg" style="background: ${EMC.utils.avatarColor(c.identity.fullName)}">
+          ${EMC.utils.initials(c.identity.fullName)}
+        </div>
+        <div style="flex: 1;">
+          <h1 class="detail-name">${c.identity.fullName}</h1>
+          <div class="detail-sub">${c.identity.title || '—'} · <strong style="color: var(--emc-ink);">${c.identity.companyName || '—'}</strong></div>
+          <div class="detail-tag-row">
+            <span class="badge badge-heat-${temp}"><span class="heat-dot ${temp}"></span>${tempLabel} · ${c.engagement?.engagementScore || 0}/100</span>
+            <span class="badge badge-stage">${String(stage.id).padStart(2, '0')} · ${stage.name}</span>
+            <span class="badge">المنطقة ${stage.zone} · ${stage.zoneName}</span>
+            ${(c.context?.tags || []).map(t => `<span class="badge">#${t}</span>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex; gap: 8px; flex-direction: column; align-items: stretch;">
+          <a href="https://wa.me/${(c.channels?.whatsapp || '').replace(/[^\d]/g, '')}" target="_blank" class="btn btn-accent btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.6-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.6.1-.3-.1-1.2-.4-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6.1-.1.3-.3.4-.5l.3-.4c.1-.2 0-.3-.1-.5L9.6 7c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2 0 1.3.9 2.5 1.1 2.7.1.2 1.8 2.8 4.4 3.9.6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.6-.6 1.8-1.3.2-.7.2-1.2.1-1.3 0-.1-.2-.2-.5-.3zM12 2C6.5 2 2 6.5 2 12c0 1.7.4 3.4 1.3 4.9L2 22l5.2-1.4c1.4.8 3.1 1.2 4.8 1.2 5.5 0 10-4.5 10-10S17.5 2 12 2zm0 18.3c-1.5 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3c-.9-1.4-1.3-3-1.3-4.5 0-4.6 3.8-8.3 8.4-8.3 4.6 0 8.3 3.8 8.3 8.3s-3.7 8.4-8.3 8.4z"/></svg>
+            واتساب
+          </a>
+          <button class="btn btn-outline btn-sm" id="move-stage-btn">↑ نقل لمرحلة</button>
+        </div>
+      </div>
+
+      <!-- Pipeline strip -->
+      <div style="padding: 16px 26px;">
+        <div style="font-size: 12px; color: var(--emc-muted); margin-bottom: 10px; display:flex; align-items:center; gap: 8px;">
+          <span style="font-weight: 700; color: var(--emc-ink-2);">رحلة العميل</span>
+          <span>·</span>
+          <span>المرحلة ${stage.id} من 14</span>
+        </div>
+        <div class="pipeline" id="pipeline-strip"></div>
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="grid-4" style="margin-bottom: 22px;">
+      <div class="stat-card accent-navy">
+        <div class="stat-label">نقاط التفاعل</div>
+        <div class="stat-value">${c.engagement?.engagementScore || 0}</div>
+        <div class="meter"><div style="width:${c.engagement?.engagementScore || 0}%; background: ${temp === 'burning' ? 'var(--emc-red)' : temp === 'hot' ? '#D97540' : temp === 'warm' ? 'var(--emc-gold)' : 'var(--heat-cold)'}"></div></div>
+      </div>
+      <div class="stat-card accent-gold">
+        <div class="stat-label">قيمة الفرصة</div>
+        <div class="stat-value" style="font-size: 22px;">${EMC.utils.formatCurrency(c.opportunity?.expectedValue || 0)}</div>
+        <div class="stat-meta">احتمال إغلاق ${c.opportunity?.closeProbability || 0}%</div>
+      </div>
+      <div class="stat-card accent-red">
+        <div class="stat-label">آخر تفاعل</div>
+        <div class="stat-value" style="font-size: 17px;">${EMC.utils.formatDate(c.context?.lastInteractionAt || c.createdAt, { relative: true })}</div>
+        <div class="stat-meta">${c.engagement?.callsCount || 0} مكالمة · ${c.engagement?.emailOpens || 0} فتح إيميل</div>
+      </div>
+      <div class="stat-card accent-success">
+        <div class="stat-label">المصدر</div>
+        <div class="stat-value" style="font-size: 17px;">${EMC.SOURCES[c.context?.source] || '—'}</div>
+        <div class="stat-meta">${c.context?.sourceDetails || '—'}</div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-strip" id="tabs"></div>
+
+    <div style="display:grid; grid-template-columns: 1fr 320px; gap: 22px;">
+      <div id="tab-panels"></div>
+
+      <!-- Sidebar: timeline + next steps -->
+      <div>
+        <div class="card card-pad">
+          <h3 style="margin: 0 0 14px; font-size: 14px; color: var(--emc-navy); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">السجل الزمني</h3>
+          <div class="timeline" id="contact-timeline"></div>
+        </div>
+
+        <div class="card card-pad" style="margin-top: 16px; background: var(--emc-navy); color: #fff; border-color: var(--emc-navy);">
+          <div style="display:flex; align-items:center; gap:8px; margin-bottom: 10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 4 14 12 14 11 22 20 10 12 10"/></svg>
+            <span style="font-weight: 700; font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em;">الخطوة التالية المقترحة</span>
+          </div>
+          <div style="font-size: 14.5px; line-height: 1.6;" id="next-step-text"></div>
+          <button class="btn btn-accent btn-sm" style="margin-top: 16px;" id="schedule-btn">جدولة المهمة</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // ─── Pipeline strip ───
+  const pipeline = document.getElementById('pipeline-strip');
+  pipeline.innerHTML = EMC.STAGES.map(s => {
+    let cls = '';
+    if (s.id < c.currentStage) cls = 'done';
+    if (s.id === c.currentStage) cls = 'current';
+    return `<div class="pipeline-stage ${cls}" title="${s.name}">
+      <span class="pipeline-num">${s.id}</span>
+      <span>${s.name}</span>
+    </div>`;
+  }).join('');
+
+  // ─── Tabs ───
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = layers.map((l, i) => `
+    <button class="tab-btn ${i === 0 ? 'active' : ''}" data-tab="${l.code}">
+      <span class="tab-letter">${l.letter}</span>
+      <span>${l.title}</span>
+    </button>
+  `).join('');
+
+  const panelsEl = document.getElementById('tab-panels');
+  panelsEl.innerHTML = layers.map((l, i) => `
+    <div class="tab-panel ${i === 0 ? 'active' : ''}" data-panel="${l.code}">
+      <div class="layer-card">
+        <div class="layer-card-header">
+          <div class="layer-letter">${l.letter}</div>
+          <div>
+            <h2 class="layer-title">${l.title}</h2>
+            <div class="layer-question">${l.q}</div>
+          </div>
+        </div>
+        ${renderLayer(l.code, c)}
+      </div>
+    </div>
+  `).join('');
+
+  tabsEl.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabsEl.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      panelsEl.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      panelsEl.querySelector(`[data-panel="${btn.dataset.tab}"]`).classList.add('active');
+    });
+  });
+
+  // ─── Timeline ───
+  const stageColors = { stage_change: 'gold', manual_note: 'navy', email_open: 'red', call_logged: 'red' };
+  const stageLabels = { stage_change: 'نقل مرحلة', manual_note: 'ملاحظة', email_open: 'فتح إيميل', call_logged: 'مكالمة' };
+  const tl = events.map(ev => {
+    let title;
+    if (ev.type === 'stage_change') {
+      const f = EMC.utils.getStage(ev.data.from);
+      const t = EMC.utils.getStage(ev.data.to);
+      title = `${f?.name || '—'} → <strong>${t?.name}</strong>`;
+    } else if (ev.type === 'manual_note') {
+      title = `تم ${ev.data?.action === 'created' ? 'إنشاء جهة الاتصال' : 'تحديث البيانات'}`;
+    } else {
+      title = stageLabels[ev.type] || ev.type;
+    }
+    return `
+      <div class="timeline-item">
+        <div class="timeline-dot ${stageColors[ev.type] || 'navy'}"></div>
+        <div class="timeline-content">
+          <div class="timeline-title" style="font-size: 13px;">${title}</div>
+          <div class="timeline-meta">${EMC.utils.formatDate(ev.timestamp, { relative: true })}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('contact-timeline').innerHTML = tl || `<div style="font-size: 13px; color: var(--emc-muted);">لا توجد أحداث مسجلة بعد.</div>`;
+
+  // ─── Next step ───
+  const nextStepMap = {
+    1: 'حدد شريحة مستهدفة وابدأ حملة اكتشاف.',
+    2: 'وجّه له محتوى قيمة (دليل أو حالة) عشان تحوّله لمُعرَّف.',
+    3: 'تأكد إنه استلم سلسلة الترحيب وتابعه بعد 7 أيام.',
+    4: 'دعوة لندوة أو ساعة مفتوحة لرفع التفاعل، أو جدولة مكالمة تأهيل.',
+    5: 'حدد موعد مكالمة استكشاف خلال 5 أيام.',
+    6: 'بعد المكالمة: ابعث ملخص + قرار Fit/No-fit خلال 24 ساعة.',
+    7: 'تابع استلام العرض، وتأكد إنه قرأه. بعد 5 أيام بدون رد، اتدخل بزاوية جديدة.',
+    8: 'سجّل الاعتراضات في النظام، ورد بسكريبت مُعدّ مسبقاً.',
+    9: 'لو Won: ابدأ Onboarding فوراً. لو Lost: وثّق السبب وأضفه لـ Re-engagement.',
+    10: 'تأكد من اكتمال استبيان التشخيص قبل أول جلسة.',
+    11: 'تابع الحضور وإنجاز المهام (Rocks).',
+    12: 'Check-in بعد 14 يوم. اسأل عن تطبيق كل من الـ 6 مكونات.',
+    13: 'اطلب شهادة في اللحظة الذهبية + استبيان NPS.',
+    14: 'كافئ السفير، وأشركه في فعالية، وقدّم له لوحة الإحالات.'
+  };
+  document.getElementById('next-step-text').textContent = nextStepMap[c.currentStage] || '—';
+
+  // ─── Actions ───
+  document.getElementById('move-stage-btn').addEventListener('click', async () => {
+    const next = c.currentStage + 1;
+    if (next > 14) { EMC.utils.toast('وصل بالفعل لآخر مرحلة', 'default'); return; }
+    const nextStage = EMC.utils.getStage(next);
+    if (!confirm(`نقل ${c.identity.fullName} إلى المرحلة ${next} — ${nextStage.name}؟`)) return;
+    await EMC.contacts.moveToStage(id, next, 'نقل يدوي من صفحة التفاصيل');
+    EMC.utils.toast('تم نقل المرحلة', 'success');
+    setTimeout(() => window.location.reload(), 800);
+  });
+
+  document.getElementById('schedule-btn').addEventListener('click', () => {
+    EMC.utils.toast('قريباً — نظام جدولة المهام', 'default');
+  });
+
+  // ─── Layer render functions ───
+  function fieldDisplay(key, value, options = {}) {
+    const isEmpty = value === '' || value == null;
+    return `
+      <div class="field-display">
+        <div class="key">${key}</div>
+        <div class="val ${isEmpty ? 'empty' : ''}">${isEmpty ? 'غير مُسجّل' : value}</div>
+      </div>
+    `;
+  }
+
+  function renderLayer(code, c) {
+    switch (code) {
+      case 'identity': return `
+        <div class="grid-3">
+          ${fieldDisplay('الاسم الكامل', c.identity.fullName)}
+          ${fieldDisplay('المنصب', c.identity.title)}
+          ${fieldDisplay('الشركة', c.identity.companyName)}
+          ${fieldDisplay('الصناعة', EMC.INDUSTRIES[c.identity.industry])}
+          ${fieldDisplay('حجم الشركة', EMC.COMPANY_SIZES[c.identity.companySize])}
+          ${fieldDisplay('نطاق الإيراد', EMC.REVENUE_RANGES[c.identity.revenueRange])}
+          ${fieldDisplay('سنوات في السوق', EMC.YEARS_IN_BUSINESS[c.identity.yearsInBusiness])}
+          ${fieldDisplay('المدينة', c.identity.city)}
+          ${fieldDisplay('لغة التواصل', c.identity.preferredLanguage === 'ar' ? 'العربية' : 'الإنجليزية')}
+        </div>`;
+      case 'channels': return `
+        <div class="grid-2">
+          ${fieldDisplay('البريد الأساسي', c.channels.primaryEmail)}
+          ${fieldDisplay('الموبايل', c.channels.mobile)}
+          ${fieldDisplay('واتساب', c.channels.whatsapp)}
+          ${fieldDisplay('LinkedIn', c.channels.linkedinUrl)}
+          ${fieldDisplay('القناة المفضلة', EMC.PREFERRED_CHANNELS[c.channels.preferredChannel])}
+          ${fieldDisplay('أفضل توقيت', c.channels.bestContactTime)}
+        </div>`;
+      case 'context': return `
+        <div class="grid-2">
+          ${fieldDisplay('المصدر', EMC.SOURCES[c.context.source])}
+          ${fieldDisplay('تفاصيل المصدر', c.context.sourceDetails)}
+          ${fieldDisplay('تاريخ أول لمسة', EMC.utils.formatDate(c.context.firstTouchAt))}
+          ${fieldDisplay('آخر تفاعل', EMC.utils.formatDate(c.context.lastInteractionAt))}
+          ${fieldDisplay('الوسوم', (c.context.tags || []).map(t => `#${t}`).join(' · '))}
+        </div>
+        <div class="h-divide"></div>
+        <div class="field-display">
+          <div class="key">ملاحظات</div>
+          <div class="val ${!c.context.notes ? 'empty' : ''}" style="white-space:pre-wrap;">${c.context.notes || 'لا توجد ملاحظات'}</div>
+        </div>`;
+      case 'eosProfile': return `
+        <div class="grid-2">
+          ${fieldDisplay('الدور الحالي', EMC.EOS_ROLES[c.eosProfile.currentRole])}
+          ${fieldDisplay('درجة الإلمام بـ EOS', EMC.EOS_FAMILIARITY[c.eosProfile.eosFamiliarity])}
+          ${fieldDisplay('مرحلة الشركة', EMC.COMPANY_STAGES[c.eosProfile.companyStage])}
+          ${fieldDisplay('السقف اللي بيصطدم بيه', EMC.CEILINGS[c.eosProfile.ceiling])}
+          ${fieldDisplay('المكون الأساسي اللي محتاج تركيز', EMC.EOS_COMPONENTS[c.eosProfile.primaryComponent])}
+        </div>
+        <div class="h-divide"></div>
+        <div class="field-display">
+          <div class="key">نقاط الألم</div>
+          <div class="val">${(c.eosProfile.pains || []).length ? (c.eosProfile.pains || []).map(p => `<div style="padding: 6px 12px; background: var(--emc-cream); border-radius: 6px; margin-bottom: 4px; display: inline-block; margin-inline-end: 6px;">⚠️ ${p}</div>`).join('') : '<span class="empty">غير مُسجّل</span>'}</div>
+        </div>
+        <div class="field-display">
+          <div class="key">أهداف الـ 12 شهر القادمة</div>
+          <div class="val ${!c.eosProfile.goals12Months ? 'empty' : ''}">${c.eosProfile.goals12Months || 'غير مُسجّل'}</div>
+        </div>`;
+      case 'engagement':
+        const score = c.engagement.engagementScore || 0;
+        return `
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 22px;">
+          <div class="stat-card accent-navy"><div class="stat-label">فتح إيميل</div><div class="stat-value">${c.engagement.emailOpens || 0}</div></div>
+          <div class="stat-card accent-navy"><div class="stat-label">نقرات</div><div class="stat-value">${c.engagement.emailClicks || 0}</div></div>
+          <div class="stat-card accent-red"><div class="stat-label">مكالمات</div><div class="stat-value">${c.engagement.callsCount || 0}</div></div>
+          <div class="stat-card accent-gold"><div class="stat-label">فعاليات</div><div class="stat-value">${(c.engagement.eventsAttended || []).length}</div></div>
+        </div>
+        <div class="field-display">
+          <div class="key">نقاط التفاعل (Engagement Score)</div>
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="flex:1;">
+              <div class="meter" style="height: 10px;"><div style="width:${score}%; background:${temp === 'burning' ? 'var(--emc-red)' : temp === 'hot' ? '#D97540' : temp === 'warm' ? 'var(--emc-gold)' : 'var(--heat-cold)'}"></div></div>
+              <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--emc-faint); margin-top: 4px;">
+                <span>0 · بارد</span><span>31 · دافئ</span><span>61 · حار</span><span>81 · مشتعل</span>
+              </div>
+            </div>
+            <div style="font-size: 28px; font-weight: 800; color: var(--emc-navy); font-variant-numeric: tabular-nums;">${score}</div>
+          </div>
+        </div>`;
+      case 'opportunity': return `
+        <div class="grid-2">
+          ${fieldDisplay('القيمة المتوقعة', EMC.utils.formatCurrency(c.opportunity.expectedValue))}
+          ${fieldDisplay('احتمالية الإغلاق', c.opportunity.closeProbability ? c.opportunity.closeProbability + '%' : null)}
+          ${fieldDisplay('التاريخ المتوقع للإغلاق', EMC.utils.formatDate(c.opportunity.expectedCloseDate))}
+          ${fieldDisplay('دور صانع القرار', EMC.DECISION_ROLES[c.opportunity.decisionRole])}
+          ${fieldDisplay('تأكيد الميزانية', EMC.BUDGET_CONFIRMED[c.opportunity.budgetConfirmed])}
+          ${fieldDisplay('إلحاحية التوقيت', EMC.TIMELINE_URGENCY[c.opportunity.timelineUrgency])}
+        </div>
+        <div class="h-divide"></div>
+        <div class="field-display">
+          <div class="key">أصحاب المصلحة الداخليين</div>
+          <div class="val ${!(c.opportunity.stakeholders || []).length ? 'empty' : ''}">${(c.opportunity.stakeholders || []).join(' · ') || 'غير مُسجّل'}</div>
+        </div>
+        <div class="field-display">
+          <div class="key">الاعتراضات</div>
+          <div class="val">
+            ${(c.opportunity.objections || []).length
+              ? (c.opportunity.objections || []).map(o => `<div style="padding: 8px 14px; background: var(--emc-cream); border-radius: 6px; margin-bottom: 6px;">${o.type} — <span style="color: var(--emc-muted); font-size: 12px;">${o.status}</span></div>`).join('')
+              : '<span class="empty">لا توجد اعتراضات مسجلة</span>'}
+          </div>
+        </div>`;
+      case 'customer': return c.customer.cohortId ? `
+        <div class="grid-2">
+          ${fieldDisplay('الكوهورت', c.customer.cohortId)}
+          ${fieldDisplay('تاريخ التسجيل', EMC.utils.formatDate(c.customer.enrollmentDate))}
+          ${fieldDisplay('حالة الدفع', c.customer.paymentStatus)}
+          ${fieldDisplay('المبلغ المدفوع', EMC.utils.formatCurrency(c.customer.paymentAmount))}
+          ${fieldDisplay('الكوتش المُكلف', c.customer.assignedCoach)}
+        </div>
+        <div class="h-divide"></div>
+        <div class="grid-2">
+          <div class="field-display">
+            <div class="key">معدل الحضور</div>
+            <div class="val"><strong>${c.customer.attendanceRate || 0}%</strong></div>
+            <div class="meter"><div style="width:${c.customer.attendanceRate || 0}%"></div></div>
+          </div>
+          <div class="field-display">
+            <div class="key">إنجاز المهام (Rocks)</div>
+            <div class="val"><strong>${c.customer.rocksCompletionRate || 0}%</strong></div>
+            <div class="meter"><div class="gold" style="width:${c.customer.rocksCompletionRate || 0}%"></div></div>
+          </div>
+        </div>` : `<div class="empty"><h3>لم يصبح عميلاً نشطاً بعد</h3>هذا القسم يتفعّل عند الوصول للمرحلة 10 (التهيئة)</div>`;
+      case 'outcomes': return c.outcomes.resultsNarrative ? `
+        <div class="field-display">
+          <div class="key">سرد النتائج</div>
+          <div class="val">${c.outcomes.resultsNarrative}</div>
+        </div>
+        <div class="grid-3">
+          ${fieldDisplay('NPS بعد 3 شهور', c.outcomes.nps3Month != null ? c.outcomes.nps3Month + '/10' : null)}
+          ${fieldDisplay('NPS بعد 6 شهور', c.outcomes.nps6Month != null ? c.outcomes.nps6Month + '/10' : null)}
+          ${fieldDisplay('NPS بعد 12 شهر', c.outcomes.nps12Month != null ? c.outcomes.nps12Month + '/10' : null)}
+        </div>
+        <div class="h-divide"></div>
+        <div class="field-display">
+          <div class="key">مكونات EOS المُطبَّقة (${(c.outcomes.eosComponentsImplemented || []).length}/6)</div>
+          <div style="display:flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;">
+            ${['vto', 'accountability_chart', 'level_10', 'rocks', 'scorecard', 'ids'].map(comp => {
+              const labels = { vto: 'V/TO', accountability_chart: 'Accountability Chart', level_10: 'Level 10', rocks: 'Rocks', scorecard: 'Scorecard', ids: 'IDS' };
+              const applied = (c.outcomes.eosComponentsImplemented || []).includes(comp);
+              return `<span class="badge ${applied ? 'badge-success' : ''}" style="${applied ? '' : 'opacity: 0.5;'}">${applied ? '✓' : '○'} ${labels[comp]}</span>`;
+            }).join('')}
+          </div>
+        </div>
+        ${c.outcomes.testimonialContent ? `<div class="h-divide"></div><div class="field-display"><div class="key">الشهادة</div><div class="val" style="font-style: italic; padding: 14px 18px; background: var(--emc-cream); border-radius: 8px; border-inline-start: 3px solid var(--emc-gold);">"${c.outcomes.testimonialContent}"</div></div>` : ''}` :
+        `<div class="empty"><h3>لم يتم تسجيل نتائج بعد</h3>يتم تعبئة هذا القسم بعد الانتهاء من البرنامج</div>`;
+      case 'advocacy': return c.advocacy.referralsCount > 0 ? `
+        <div class="grid-3">
+          <div class="stat-card accent-red"><div class="stat-label">إحالات إجمالاً</div><div class="stat-value">${c.advocacy.referralsCount}</div></div>
+          <div class="stat-card accent-success"><div class="stat-label">تحوّلت لعملاء</div><div class="stat-value">${c.advocacy.successfulReferrals}</div></div>
+          <div class="stat-card accent-gold"><div class="stat-label">قيمة الإحالات</div><div class="stat-value" style="font-size: 20px;">${EMC.utils.formatCurrency(c.advocacy.referralsValue)}</div></div>
+        </div>
+        <div class="h-divide"></div>
+        <div class="field-display">
+          <div class="key">المساهمات في المحتوى</div>
+          <div class="val">${(c.advocacy.contentContributions || []).length ? (c.advocacy.contentContributions || []).map(x => `<span class="badge" style="margin: 0 4px 4px 0;">${x}</span>`).join('') : '<span class="empty">لا توجد</span>'}</div>
+        </div>` :
+        `<div class="empty"><h3>لم يبدأ السفارة بعد</h3>يتفعّل بعد أول إحالة أو مساهمة</div>`;
+      default: return '';
+    }
+  }
+})();
+</script>
+</body>
+</html>
