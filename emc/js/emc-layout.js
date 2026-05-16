@@ -39,7 +39,7 @@ window.EMC.layout = {
   },
 
   async render({ page = 'dashboard', count = null }) {
-    const session = EMC.auth.protect();
+    const session = await EMC.auth.protect();
     if (!session) return null;
 
     // counts
